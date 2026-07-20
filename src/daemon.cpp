@@ -20,15 +20,18 @@ int Daemon::run() {
         return 1;
     }
 
+    int exit_code = 0;
+    PLOGI << "Daemon started.";
+
     if (!spatial_service_.init(config_)) {
         PLOGE << "SpatialService init failed. Continuing without Spatial API.";
-    } else if (!spatial_service_.start()) {
-        PLOGE << "SpatialService start failed. Continuing without Spatial API.";
+    } else if (!spatial_service_.start() && !stop_requested_.load(std::memory_order_relaxed)) {
+        PLOGE << "SpatialService unavailable. Continuing without Spatial API.";
     }
 
-    PLOGI << "Daemon started. Waiting for stop request.";
-
-    int exit_code = 0;
+    if (!stop_requested_.load(std::memory_order_relaxed)) {
+        PLOGI << "Waiting for stop request.";
+    }
     while (!stop_requested_.load(std::memory_order_relaxed)) {
         if (!fleet_gateway_.isRunning()) {
             PLOGE << "FleetGateway stopped unexpectedly.";
@@ -47,6 +50,7 @@ int Daemon::run() {
 
 void Daemon::stop() {
     stop_requested_.store(true, std::memory_order_relaxed);
+    spatial_service_.stop();
 }
 
 }  // namespace syrius_orbit

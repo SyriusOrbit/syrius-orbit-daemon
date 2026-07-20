@@ -1,10 +1,8 @@
 #pragma once
 
 #include <atomic>
-#include <condition_variable>
 #include <functional>
 #include <mutex>
-#include <thread>
 
 #include "syrius_orbit/runtime_config.hpp"
 
@@ -18,20 +16,14 @@ public:
     [[nodiscard]] bool isRunning() const;
 
 private:
-    void run_server();
-    void notify_start_result(bool success);
+    bool run_server();
 
     RuntimeConfig config_;
     std::atomic_bool initialized_{false};
     std::atomic_bool running_{false};
     std::atomic_bool stop_requested_{false};
-    std::thread worker_thread_;
-    std::mutex start_mutex_;
-    std::condition_variable start_cv_;
     std::mutex server_control_mutex_;
     std::function<void()> stop_server_fn_;
-    bool start_done_{false};
-    bool start_success_{false};
 };
 
 }  // namespace syrius_orbit

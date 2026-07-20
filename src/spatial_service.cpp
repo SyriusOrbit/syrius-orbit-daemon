@@ -33,37 +33,18 @@ bool SpatialService::start() {
     }
 
     stop_requested_.store(false, std::memory_order_relaxed);
-    {
-        std::lock_guard<std::mutex> lock(start_mutex_);
-        start_done_ = false;
-        start_success_ = false;
-    }
-
-    worker_thread_ = std::thread([this] { run_server(); });
-
-    std::unique_lock<std::mutex> lock(start_mutex_);
-    start_cv_.wait(lock, [this] { return start_done_; });
-    const bool started = start_success_;
-    lock.unlock();
-
-    if (!started && worker_thread_.joinable()) {
-        worker_thread_.join();
-    }
-    return started;
+    return run_server();
 }
 
 void SpatialService::stop() {
     stop_requested_.store(true, std::memory_order_relaxed);
     std::function<void()> stop_server_fn;
     {
-        std::lock_guard<std::mutex> lock(server_control_mutex_);
+        std::lock_guard lock(server_control_mutex_);
         stop_server_fn = stop_server_fn_;
     }
     if (stop_server_fn) {
         stop_server_fn();
-    }
-    if (worker_thread_.joinable()) {
-        worker_thread_.join();
     }
     running_.store(false, std::memory_order_relaxed);
 }
@@ -72,16 +53,7 @@ bool SpatialService::isRunning() const {
     return running_.load(std::memory_order_relaxed);
 }
 
-void SpatialService::notify_start_result(bool success) {
-    {
-        std::lock_guard<std::mutex> lock(start_mutex_);
-        start_done_ = true;
-        start_success_ = success;
-    }
-    start_cv_.notify_one();
-}
-
-void SpatialService::run_server() {
+bool SpatialService::run_server() {
     httplib::Server server;
     server.set_pre_routing_handler([](const httplib::Request& req, httplib::Response& res) {
         if (req.method == "HEAD" && req.path == "/health") {
@@ -98,7 +70,7 @@ void SpatialService::run_server() {
 
         res.status = 200;
         PLOGI << "SpatialService health check OK.";
-        res.set_content("{\"status\":\"ok\"}", "application/json");
+        res.set_content(R"({"status":"ok"})", "application/json");
         res.set_header("Connection", "close");
     });
     server.set_error_handler([](const httplib::Request&, httplib::Response& res) {
@@ -110,26 +82,36 @@ void SpatialService::run_server() {
     const std::string bind_host = (config_.http_host == "*") ? "0.0.0.0" : config_.http_host;
     if (!server.bind_to_port(bind_host, config_.http_port)) {
         PLOGE << "SpatialService failed to bind on " << config_.http_host << ":" << config_.http_port;
-        notify_start_result(false);
-        return;
+        return false;
     }
 
     {
-        std::lock_guard<std::mutex> lock(server_control_mutex_);
+        std::lock_guard lock(server_control_mutex_);
         stop_server_fn_ = [&server]() { server.stop(); };
     }
 
+    if (stop_requested_.load(std::memory_order_relaxed)) {
+        std::lock_guard lock(server_control_mutex_);
+        stop_server_fn_ = nullptr;
+        return true;
+    }
+
     running_.store(true, std::memory_order_relaxed);
-    notify_start_result(true);
     PLOGI << "SpatialService listening on " << config_.http_host << ":" << config_.http_port;
     server.listen_after_bind();
 
     {
-        std::lock_guard<std::mutex> lock(server_control_mutex_);
+        std::lock_guard lock(server_control_mutex_);
         stop_server_fn_ = nullptr;
     }
     running_.store(false, std::memory_order_relaxed);
-    PLOGI << "SpatialService stopped.";
+    if (stop_requested_.load(std::memory_order_relaxed)) {
+        PLOGI << "SpatialService stopped.";
+        return true;
+    }
+
+    PLOGE << "SpatialService stopped unexpectedly.";
+    return false;
 }
 
 }  // namespace syrius_orbit
