@@ -4,3 +4,4 @@
 requirements:
   - "mosquitto/2.0.22"
   - "plog/1.1.10"
+  - "cpp-httplib/0.47.0"

@@ -11,10 +11,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(mosquitto)
 find_package(plog)
+find_package(httplib REQUIRED)
 
 include_directories(include)
-add_library(syrius_orbit_daemon STATIC src/daemon.cpp)
-target_link_libraries(syrius_orbit_daemon PRIVATE mosquitto::mosquitto plog::plog)
+add_library(
+    syrius_orbit_daemon
+    STATIC
+    src/daemon.cpp
+    src/runtime_config.cpp
+    src/spatial_service.cpp
+    src/fleet_gateway.cpp
+)
+target_link_libraries(syrius_orbit_daemon PRIVATE mosquitto::mosquitto plog::plog httplib::httplib)
+
+if(WIN32)
+    target_link_libraries(syrius_orbit_daemon PRIVATE ws2_32)
+endif()
 
 if(MSVC)
     target_compile_options(syrius_orbit_daemon PRIVATE /W4 /WX)
