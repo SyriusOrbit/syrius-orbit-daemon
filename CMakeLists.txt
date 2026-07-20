@@ -12,17 +12,25 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(mosquitto)
 find_package(plog)
 find_package(httplib REQUIRED)
+find_package(argparse REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 include_directories(include)
 add_library(
     syrius_orbit_daemon
     STATIC
     src/daemon.cpp
-    src/runtime_config.cpp
     src/spatial_service.cpp
     src/fleet_gateway.cpp
 )
-target_link_libraries(syrius_orbit_daemon PRIVATE mosquitto::mosquitto plog::plog httplib::httplib)
+target_link_libraries(
+    syrius_orbit_daemon
+    PRIVATE
+    mosquitto::mosquitto
+    plog::plog
+    httplib::httplib
+    nlohmann_json::nlohmann_json
+)
 
 if(WIN32)
     target_link_libraries(syrius_orbit_daemon PRIVATE ws2_32)
@@ -35,5 +43,13 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp )
-target_link_libraries(${PROJECT_NAME} PRIVATE syrius_orbit_daemon mosquitto::mosquitto plog::plog)
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE
+    syrius_orbit_daemon
+    mosquitto::mosquitto
+    plog::plog
+    argparse::argparse
+    nlohmann_json::nlohmann_json
+)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

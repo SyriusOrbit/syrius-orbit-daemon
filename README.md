@@ -55,6 +55,8 @@ Configuration precedence is:
 2. Config file
 3. Built-in defaults
 
+Default config file path is `syrius_orbit_daemon.json`.
+
 Supported CLI options:
 
 - `--config=<path>`
@@ -67,8 +69,36 @@ Supported CLI options:
 - `--mqtt-password=<password>`
 - `--mqtt-topic-prefix=<prefix>`
 
+JSON config keys (`snake_case`):
+
+- `http_host`
+- `http_port`
+- `mqtt_host`
+- `mqtt_port`
+- `mqtt_client_id`
+- `mqtt_username`
+- `mqtt_password`
+- `mqtt_topic_prefix`
+
+Example `syrius_orbit_daemon.json`:
+
+```json
+{
+  "http_host": "0.0.0.0",
+  "http_port": 8080,
+  "mqtt_host": "127.0.0.1",
+  "mqtt_port": 1883,
+  "mqtt_client_id": "syrius-orbit-daemon",
+  "mqtt_username": "",
+  "mqtt_password": "",
+  "mqtt_topic_prefix": "vda5050/v3"
+}
+```
+
 ## Third-party Dependencies
 
 - `mosquitto`
 - `plog`
 - `cpp-httplib`
+- `argparse`
+- `nlohmann_json`
