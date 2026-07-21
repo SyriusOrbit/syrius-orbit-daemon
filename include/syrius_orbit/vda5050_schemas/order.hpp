@@ -35,15 +35,16 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ReferencePoint,
                                  {ReferencePoint::CONTOUR, "CONTOUR"},
                              });
 
-enum class ReleaseLossBehavior {
+enum class CorridorReleaseLossBehavior {
   STOP,
   RETURN,
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(ReleaseLossBehavior,
+NLOHMANN_JSON_SERIALIZE_ENUM(CorridorReleaseLossBehavior,
                              {
-                                 {ReleaseLossBehavior::STOP, "STOP"},
-                                 {ReleaseLossBehavior::RETURN, "RETURN"},
+                                 {CorridorReleaseLossBehavior::STOP, "STOP"},
+                                 {CorridorReleaseLossBehavior::RETURN,
+                                  "RETURN"},
                              });
 
 struct Node {
@@ -64,7 +65,7 @@ struct Corridor {
   double rightWidth{};
   std::optional<ReferencePoint> corridorReferencePoint{};
   std::optional<bool> releaseRequired{};
-  std::optional<ReleaseLossBehavior> releaseLossBehavior{};
+  std::optional<CorridorReleaseLossBehavior> releaseLossBehavior{};
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Corridor, leftWidth, rightWidth,

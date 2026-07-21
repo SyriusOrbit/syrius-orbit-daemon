@@ -5,10 +5,10 @@
 namespace syrius_orbit::vda5050 {
 
 enum class BlockingType {
-  NONE,
-  SOFT,
-  SINGLE,
-  HARD,
+  NONE,   // allows driving and other actions;
+  SINGLE, // allows driving but no other actions;
+  SOFT,   // allows other actions but not driving;
+  HARD,   // is the only allowed action at that time.
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(BlockingType, {

@@ -10,7 +10,7 @@
 
 namespace syrius_orbit::vda5050 {
 
-enum class SupportedZonesItem {
+enum class SupportedZoneType {
   BLOCKED,
   LINE_GUIDED,
   RELEASE,
@@ -24,18 +24,18 @@ enum class SupportedZonesItem {
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-    SupportedZonesItem,
+    SupportedZoneType,
     {
-        {SupportedZonesItem::BLOCKED, "BLOCKED"},
-        {SupportedZonesItem::LINE_GUIDED, "LINE_GUIDED"},
-        {SupportedZonesItem::RELEASE, "RELEASE"},
-        {SupportedZonesItem::COORDINATED_REPLANNING, "COORDINATED_REPLANNING"},
-        {SupportedZonesItem::SPEED_LIMIT, "SPEED_LIMIT"},
-        {SupportedZonesItem::ACTION, "ACTION"},
-        {SupportedZonesItem::PRIORITY, "PRIORITY"},
-        {SupportedZonesItem::PENALTY, "PENALTY"},
-        {SupportedZonesItem::DIRECTED, "DIRECTED"},
-        {SupportedZonesItem::BIDIRECTED, "BIDIRECTED"},
+        {SupportedZoneType::BLOCKED, "BLOCKED"},
+        {SupportedZoneType::LINE_GUIDED, "LINE_GUIDED"},
+        {SupportedZoneType::RELEASE, "RELEASE"},
+        {SupportedZoneType::COORDINATED_REPLANNING, "COORDINATED_REPLANNING"},
+        {SupportedZoneType::SPEED_LIMIT, "SPEED_LIMIT"},
+        {SupportedZoneType::ACTION, "ACTION"},
+        {SupportedZoneType::PRIORITY, "PRIORITY"},
+        {SupportedZoneType::PENALTY, "PENALTY"},
+        {SupportedZoneType::DIRECTED, "DIRECTED"},
+        {SupportedZoneType::BIDIRECTED, "BIDIRECTED"},
     });
 
 enum class SupportType {
@@ -90,7 +90,7 @@ struct TypeSpecification {
   double maximumLoadMass{};
   std::vector<std::string> localizationTypes{};
   std::vector<std::string> navigationTypes{};
-  std::optional<std::vector<SupportedZonesItem>> supportedZones{};
+  std::optional<std::vector<SupportedZoneType>> supportedZones{};
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
@@ -152,13 +152,63 @@ struct MaximumArrayLengths {
   std::optional<std::int64_t> information_infoReferences{};
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
-    MaximumArrayLengths, order_nodes, order_edges, node_actions, edge_actions,
-    actions_actionsParameters, instantActions, trajectory_knotVector,
-    trajectory_controlPoints, zoneSet_zones, state_nodeStates, state_edgeStates,
-    state_loads, state_actionStates, state_instantActionStates,
-    state_zoneActionStates, state_errors, state_information,
-    error_errorReferences, information_infoReferences);
+#define PUT_OPT(target_json, source, member, key)                              \
+  if ((source).member.has_value())                                             \
+    (target_json)[(key)] = *((source).member);
+
+inline void to_json(nlohmann::json &j, const MaximumArrayLengths &data) {
+  PUT_OPT(j, data, order_nodes, "order.nodes");
+  PUT_OPT(j, data, order_edges, "order.edges");
+  PUT_OPT(j, data, node_actions, "node.actions");
+  PUT_OPT(j, data, edge_actions, "edge.actions");
+  PUT_OPT(j, data, actions_actionsParameters, "actions.actionsParameters");
+  PUT_OPT(j, data, instantActions, "instantActions");
+  PUT_OPT(j, data, trajectory_knotVector, "trajectory.knotVector");
+  PUT_OPT(j, data, trajectory_controlPoints, "trajectory.controlPoints");
+  PUT_OPT(j, data, zoneSet_zones, "zoneSet.zones");
+  PUT_OPT(j, data, state_nodeStates, "state.nodeStates");
+  PUT_OPT(j, data, state_edgeStates, "state.edgeStates");
+  PUT_OPT(j, data, state_loads, "state.loads");
+  PUT_OPT(j, data, state_actionStates, "state.actionStates");
+  PUT_OPT(j, data, state_instantActionStates, "state.instantActionStates");
+  PUT_OPT(j, data, state_zoneActionStates, "state.zoneActionStates");
+  PUT_OPT(j, data, state_errors, "state.errors");
+  PUT_OPT(j, data, state_information, "state.information");
+  PUT_OPT(j, data, error_errorReferences, "error.errorReferences");
+  PUT_OPT(j, data, information_infoReferences, "information.infoReferences");
+}
+
+#define EXTRACT(target, json_obj, member, dotted_key)                          \
+  if ((json_obj).contains((dotted_key)) &&                                     \
+      !(json_obj).at((dotted_key)).is_null())                                  \
+  (target).member = (json_obj).at((dotted_key)).get<std::int64_t>()
+
+inline void from_json(const nlohmann::json &j, MaximumArrayLengths &d) {
+  if (not j.is_null()) {
+    EXTRACT(d, j, order_nodes, "order.nodes");
+    EXTRACT(d, j, order_edges, "order.edges");
+    EXTRACT(d, j, node_actions, "node.actions");
+    EXTRACT(d, j, edge_actions, "edge.actions");
+    EXTRACT(d, j, actions_actionsParameters, "actions.actionsParameters");
+    EXTRACT(d, j, instantActions, "instantActions");
+    EXTRACT(d, j, trajectory_knotVector, "trajectory.knotVector");
+    EXTRACT(d, j, trajectory_controlPoints, "trajectory.controlPoints");
+    EXTRACT(d, j, zoneSet_zones, "zoneSet.zones");
+    EXTRACT(d, j, state_nodeStates, "state.nodeStates");
+    EXTRACT(d, j, state_edgeStates, "state.edgeStates");
+    EXTRACT(d, j, state_loads, "state.loads");
+    EXTRACT(d, j, state_actionStates, "state.actionStates");
+    EXTRACT(d, j, state_instantActionStates, "state.instantActionStates");
+    EXTRACT(d, j, state_zoneActionStates, "state.zoneActionStates");
+    EXTRACT(d, j, state_errors, "state.errors");
+    EXTRACT(d, j, state_information, "state.information");
+    EXTRACT(d, j, error_errorReferences, "error.errorReferences");
+    EXTRACT(d, j, information_infoReferences, "information.infoReferences");
+  }
+}
+
+#undef EXTRACT
+#undef PUT_OPT
 
 struct Timing {
   double minimumOrderInterval{};
@@ -371,7 +421,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(MobileRobotConfiguration,
                                                 versions, network,
                                                 batteryCharging);
 
-struct Factsheet {
+struct FactSheet {
   std::int64_t headerId{};
   std::string timestamp{};
   std::string version{};
@@ -387,7 +437,7 @@ struct Factsheet {
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
-    Factsheet, headerId, timestamp, version, manufacturer, serialNumber,
+    FactSheet, headerId, timestamp, version, manufacturer, serialNumber,
     typeSpecification, physicalParameters, protocolLimits, protocolFeatures,
     mobileRobotGeometry, loadSpecification, mobileRobotConfiguration);
 
