@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common.hpp"
+#include "Common.hpp"
+#include "Visualization.hpp"
 #include "node_position.h"
-#include "visualization.hpp"
 
 #include <cstdint>
 #include <nlohmann/json.hpp>

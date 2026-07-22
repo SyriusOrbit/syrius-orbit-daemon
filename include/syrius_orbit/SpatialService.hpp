@@ -4,7 +4,7 @@
 #include <functional>
 #include <mutex>
 
-#include "syrius_orbit/runtime_config.hpp"
+#include "syrius_orbit/RuntimeConfig.hpp"
 
 namespace syrius_orbit {
 

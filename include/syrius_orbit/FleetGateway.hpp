@@ -4,7 +4,7 @@
 #include <string>
 #include <thread>
 
-#include "syrius_orbit/runtime_config.hpp"
+#include "syrius_orbit/RuntimeConfig.hpp"
 
 struct mosquitto;
 struct mosquitto_message;

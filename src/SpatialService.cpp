@@ -1,4 +1,4 @@
-#include "syrius_orbit/spatial_service.hpp"
+#include "syrius_orbit/SpatialService.hpp"
 
 #include <string>
 

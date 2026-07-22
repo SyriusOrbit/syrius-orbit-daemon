@@ -20,8 +20,8 @@ add_library(
     syrius_orbit_daemon
     STATIC
     src/daemon.cpp
-    src/spatial_service.cpp
-    src/fleet_gateway.cpp
+    src/SpatialService.cpp
+    src/FleetGateway.cpp
 )
 target_link_libraries(
     syrius_orbit_daemon

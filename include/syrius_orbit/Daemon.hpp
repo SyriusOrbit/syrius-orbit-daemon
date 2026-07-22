@@ -2,9 +2,9 @@
 
 #include <atomic>
 
-#include "syrius_orbit/fleet_gateway.hpp"
-#include "syrius_orbit/runtime_config.hpp"
-#include "syrius_orbit/spatial_service.hpp"
+#include "syrius_orbit/FleetGateway.hpp"
+#include "syrius_orbit/RuntimeConfig.hpp"
+#include "syrius_orbit/SpatialService.hpp"
 
 namespace syrius_orbit {
 

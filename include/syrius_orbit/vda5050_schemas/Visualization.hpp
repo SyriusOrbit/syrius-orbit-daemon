@@ -1,6 +1,6 @@
 #pragma once
 
-#include "trajectory.h"
+#include "Trajectory.h"
 
 #include <cstdint>
 #include <nlohmann/json.hpp>

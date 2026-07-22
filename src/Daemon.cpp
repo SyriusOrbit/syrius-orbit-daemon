@@ -1,4 +1,4 @@
-#include "syrius_orbit/daemon.hpp"
+#include "syrius_orbit/Daemon.hpp"
 
 #include <chrono>
 #include <thread>

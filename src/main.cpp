@@ -1,5 +1,5 @@
-#include "syrius_orbit/daemon.hpp"
-#include "syrius_orbit/runtime_config.hpp"
+#include "syrius_orbit/Daemon.hpp"
+#include "syrius_orbit/RuntimeConfig.hpp"
 
 #include <atomic>
 #include <chrono>
