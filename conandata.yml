@@ -6,4 +6,3 @@ requirements:
   - "plog/1.1.10"
   - "cpp-httplib/0.47.0"
   - "argparse/3.2"
-  - "nlohmann_json/3.12.0"
