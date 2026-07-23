@@ -41,7 +41,9 @@ At the current stage, this repository is still an early skeleton and does not ye
 The daemon now starts two edge-facing components managed by the daemon lifecycle:
 
 - `SpatialService` (HTTP): exposes `GET /health`.
-- `FleetGateway` (MQTT): subscribes to `<mqtt_topic_prefix>/fleet/commands/#` and publishes online status to `<mqtt_topic_prefix>/fleet/status`.
+- `FleetGateway` (MQTT): starts a `VDA5050Proxy` bridge with two endpoints:
+  - local endpoint subscribes `state`, `visualization`, `connection`, `factsheet`, then forwards to cloud.
+  - cloud endpoint subscribes `order`, `instantActions`, `responses`, `zoneSet`, then forwards to local.
 
 Startup and shutdown behavior:
 
@@ -67,7 +69,14 @@ Supported CLI options:
 - `--mqtt-client-id=<id>`
 - `--mqtt-username=<username>`
 - `--mqtt-password=<password>`
+- `--cloud-mqtt-host=<host>`
+- `--cloud-mqtt-port=<port>`
+- `--cloud-mqtt-client-id=<id>`
+- `--cloud-mqtt-username=<username>`
+- `--cloud-mqtt-password=<password>`
 - `--mqtt-topic-prefix=<prefix>`
+
+`mqtt_topic_prefix` must follow VDA5050 topic root format: `<interfaceName>/<majorVersion>` (for example `vda5050/v3`).
 
 JSON config keys (`snake_case`):
 
@@ -78,6 +87,11 @@ JSON config keys (`snake_case`):
 - `mqtt_client_id`
 - `mqtt_username`
 - `mqtt_password`
+- `cloud_mqtt_host`
+- `cloud_mqtt_port`
+- `cloud_mqtt_client_id`
+- `cloud_mqtt_username`
+- `cloud_mqtt_password`
 - `mqtt_topic_prefix`
 
 Example `syrius_orbit_daemon.json`:
@@ -91,6 +105,11 @@ Example `syrius_orbit_daemon.json`:
   "mqtt_client_id": "syrius-orbit-daemon",
   "mqtt_username": "",
   "mqtt_password": "",
+  "cloud_mqtt_host": "127.0.0.1",
+  "cloud_mqtt_port": 1884,
+  "cloud_mqtt_client_id": "syrius-orbit-daemon-cloud",
+  "cloud_mqtt_username": "",
+  "cloud_mqtt_password": "",
   "mqtt_topic_prefix": "vda5050/v3"
 }
 ```

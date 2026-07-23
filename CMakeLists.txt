@@ -20,9 +20,10 @@ include_directories(include)
 add_library(
     syrius_orbit_daemon
     STATIC
-    src/daemon.cpp
+    src/Daemon.cpp
     src/SpatialService.cpp
     src/FleetGateway.cpp
+    src/VDA5050Proxy.cpp
 )
 target_link_libraries(
     syrius_orbit_daemon

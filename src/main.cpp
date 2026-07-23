@@ -96,6 +96,26 @@ int main(int argc, char **argv) {
       .default_value(config_cli.mqtt_password)
       .nargs(1)
       .metavar("password");
+  parser.add_argument("--cloud-mqtt-host")
+      .default_value(config_cli.cloud_mqtt_host)
+      .nargs(1)
+      .metavar("host");
+  parser.add_argument("--cloud-mqtt-port")
+      .default_value(std::to_string(config_cli.cloud_mqtt_port))
+      .nargs(1)
+      .metavar("port");
+  parser.add_argument("--cloud-mqtt-client-id")
+      .default_value(config_cli.cloud_mqtt_client_id)
+      .nargs(1)
+      .metavar("id");
+  parser.add_argument("--cloud-mqtt-username")
+      .default_value(config_cli.cloud_mqtt_username)
+      .nargs(1)
+      .metavar("username");
+  parser.add_argument("--cloud-mqtt-password")
+      .default_value(config_cli.cloud_mqtt_password)
+      .nargs(1)
+      .metavar("password");
   parser.add_argument("--mqtt-topic-prefix")
       .default_value(config_cli.mqtt_topic_prefix)
       .nargs(1)
@@ -122,6 +142,15 @@ int main(int argc, char **argv) {
   config_cli.mqtt_client_id = parser.get<std::string>("--mqtt-client-id");
   config_cli.mqtt_username = parser.get<std::string>("--mqtt-username");
   config_cli.mqtt_password = parser.get<std::string>("--mqtt-password");
+  config_cli.cloud_mqtt_host = parser.get<std::string>("--cloud-mqtt-host");
+  config_cli.cloud_mqtt_port = static_cast<std::uint16_t>(
+      std::stoi(parser.get<std::string>("--cloud-mqtt-port")));
+  config_cli.cloud_mqtt_client_id =
+      parser.get<std::string>("--cloud-mqtt-client-id");
+  config_cli.cloud_mqtt_username =
+      parser.get<std::string>("--cloud-mqtt-username");
+  config_cli.cloud_mqtt_password =
+      parser.get<std::string>("--cloud-mqtt-password");
   config_cli.mqtt_topic_prefix = parser.get<std::string>("--mqtt-topic-prefix");
 
   syrius_orbit::RuntimeConfig config_json;
