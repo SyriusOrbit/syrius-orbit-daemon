@@ -17,7 +17,6 @@ struct MessageMeta {
     bool retain{false};
     std::string payload;
     int mid{0};
-    bool dup{false};
 };
 
 class TypedSubscriber {
@@ -48,7 +47,6 @@ public:
             meta.qos = msg.qos;
             meta.retain = msg.retain != 0;
             meta.mid = msg.mid;
-            meta.dup = msg.dup != 0;
             if (msg.payload != nullptr && msg.payloadlen > 0)
                 meta.payload.assign(static_cast<const char*>(msg.payload), static_cast<std::size_t>(msg.payloadlen));
 
