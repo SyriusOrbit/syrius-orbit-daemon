@@ -12,7 +12,6 @@
 #include "syrius_orbit/vda5050_schemas/Visualization.hpp"
 #include "syrius_orbit/vda5050_schemas/ZoneSet.hpp"
 
-#include <mosquitto.h>
 #include <utility>
 
 namespace syrius_orbit {
@@ -24,11 +23,11 @@ public:
         Cloud,
     };
 
-    VDA5050EndPoint(mosquitto* mosq, Side side, VDA5050TopicContext topic_template)
-        : mqtt_publisher_(mosq),
-          mqtt_subscriber_(mosq),
+    VDA5050EndPoint(MqttSubscriber& mqtt_client, Side side, VDA5050TopicContext topic_template)
+        : mqtt_client_(mqtt_client),
+          mqtt_publisher_(mqtt_client_),
           typed_publisher_(mqtt_publisher_),
-          typed_subscriber_(mqtt_subscriber_),
+          typed_subscriber_(mqtt_client_),
           publisher_(typed_publisher_),
           subscriber_(typed_subscriber_, std::move(topic_template)),
           side_(side) {}
@@ -151,8 +150,8 @@ public:
     }
 
 private:
+    MqttSubscriber& mqtt_client_;
     MqttPublisher mqtt_publisher_;
-    MqttSubscriber mqtt_subscriber_;
     TypedPublisher typed_publisher_;
     TypedSubscriber typed_subscriber_;
     VDA5050Publisher publisher_;

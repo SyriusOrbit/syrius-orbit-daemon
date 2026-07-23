@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Trajectory.h"
-#include "action.h"
-#include "node_position.h"
+#include "Action.h"
+#include "NodePosition.h"
 
 #include <cstdint>
 #include <nlohmann/json.hpp>

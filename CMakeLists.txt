@@ -14,6 +14,7 @@ find_package(plog)
 find_package(httplib REQUIRED)
 find_package(argparse REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(mosquitto REQUIRED COMPONENTS libmosquittopp)
 
 include_directories(include)
 add_library(
