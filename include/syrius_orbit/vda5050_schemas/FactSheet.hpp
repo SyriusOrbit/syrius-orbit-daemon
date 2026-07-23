@@ -315,10 +315,11 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Envelope2d, envelope2dId,
 struct Envelope3d {
   std::string envelope3dId{};
   std::string format{};
-  std::optional<nlohmann::json> data{};
+  nlohmann::json data{};  // std::optional<nlohmann::json> will trigger bug
   std::optional<std::string> url{};
   std::optional<std::string> description{};
 };
+
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Envelope3d, envelope3dId,
                                                 format, data, url, description);

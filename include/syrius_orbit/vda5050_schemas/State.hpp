@@ -2,7 +2,7 @@
 
 #include "Common.hpp"
 #include "Visualization.hpp"
-#include "node_position.h"
+#include "NodePosition.h"
 
 #include <cstdint>
 #include <nlohmann/json.hpp>

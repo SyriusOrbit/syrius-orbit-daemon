@@ -15,6 +15,9 @@
 #include <plog/Init.h>
 #include <plog/Log.h>
 
+#include <syrius_orbit/vda5050_schemas/State.hpp>
+#include <syrius_orbit/mqtt/VDA5050Subscriber.hpp>
+
 namespace {
 
 std::atomic_bool g_signal_received{false};
@@ -31,9 +34,8 @@ bool load_json_config_file(const std::string &file_path,
   }
 
   std::ifstream input(file_path);
-  if (!input.good()) {
+  if (!input.good())
     PLOGE << "Can not find config file: " + file_path;
-  }
   if (!input.is_open()) {
     PLOGE << "Failed to open config file: " + file_path;
     return false;
@@ -161,9 +163,8 @@ int main(int argc, char **argv) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
-  if (!daemon_finished.load(std::memory_order_relaxed)) {
+  if (!daemon_finished.load(std::memory_order_relaxed))
     daemon.stop();
-  }
   daemon_thread.join();
 
   PLOGI << "Daemon exited with code: " << daemon_exit_code;
