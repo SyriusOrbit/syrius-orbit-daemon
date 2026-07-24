@@ -1,8 +1,8 @@
 #pragma once
 
-#include "syrius_orbit/mqtt/VDA5050Publisher.hpp"
-#include "syrius_orbit/mqtt/VDA5050Subscriber.hpp"
-#include "syrius_orbit/mqtt/VDA5050TopicContext.hpp"
+#include "VDA5050Publisher.hpp"
+#include "VDA5050Subscriber.hpp"
+#include "VDA5050TopicContext.hpp"
 #include "syrius_orbit/vda5050_schemas/Connection.hpp"
 #include "syrius_orbit/vda5050_schemas/FactSheet.hpp"
 #include "syrius_orbit/vda5050_schemas/InstantActions.hpp"

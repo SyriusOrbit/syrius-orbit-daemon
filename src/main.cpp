@@ -15,8 +15,6 @@
 #include <plog/Init.h>
 #include <plog/Log.h>
 
-#include <syrius_orbit/vda5050_schemas/State.hpp>
-#include <syrius_orbit/mqtt/VDA5050Subscriber.hpp>
 
 namespace {
 
@@ -61,6 +59,7 @@ bool load_json_config_file(const std::string &file_path,
 int main(int argc, char **argv) {
   std::signal(SIGINT, &on_signal);
   std::signal(SIGTERM, &on_signal);
+
 
   argparse::ArgumentParser parser("syrius-orbit-daemon");
   syrius_orbit::RuntimeConfig config_cli;

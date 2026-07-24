@@ -5,6 +5,8 @@ project(syrius-orbit-daemon
     LANGUAGES CXX
 )
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -17,41 +19,31 @@ find_package(nlohmann_json REQUIRED)
 find_package(mosquitto REQUIRED COMPONENTS libmosquittopp)
 
 include_directories(include)
-add_library(
-    syrius_orbit_daemon
-    STATIC
+add_executable(
+    ${PROJECT_NAME}
+    src/main.cpp
     src/Daemon.cpp
     src/SpatialService.cpp
     src/FleetGateway.cpp
     src/VDA5050Proxy.cpp
 )
 target_link_libraries(
-    syrius_orbit_daemon
+    ${PROJECT_NAME}
     PRIVATE
     mosquitto::mosquitto
     plog::plog
     httplib::httplib
     nlohmann_json::nlohmann_json
+    argparse::argparse
 )
 
 if(WIN32)
-    target_link_libraries(syrius_orbit_daemon PRIVATE ws2_32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
 endif()
 
 if(MSVC)
-    target_compile_options(syrius_orbit_daemon PRIVATE /W4 /WX)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 else()
-    target_compile_options(syrius_orbit_daemon PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
-add_executable(${PROJECT_NAME} src/main.cpp )
-target_link_libraries(
-    ${PROJECT_NAME}
-    PRIVATE
-    syrius_orbit_daemon
-    mosquitto::mosquitto
-    plog::plog
-    argparse::argparse
-    nlohmann_json::nlohmann_json
-)
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

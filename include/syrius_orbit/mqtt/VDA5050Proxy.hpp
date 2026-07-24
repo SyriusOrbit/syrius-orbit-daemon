@@ -1,9 +1,9 @@
 #pragma once
 
 #include "syrius_orbit/RuntimeConfig.hpp"
-#include "syrius_orbit/mqtt/MqttSubscriber.hpp"
-#include "syrius_orbit/mqtt/VDA5050EndPoint.hpp"
-#include "syrius_orbit/mqtt/VDA5050TopicContext.hpp"
+#include "MqttSubscriber.hpp"
+#include "VDA5050EndPoint.hpp"
+#include "VDA5050TopicContext.hpp"
 
 #include <atomic>
 #include <memory>

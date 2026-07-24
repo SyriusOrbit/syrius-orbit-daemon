@@ -1,7 +1,7 @@
 #pragma once
 
-#include "syrius_orbit/mqtt/VDA5050TopicContext.hpp"
-#include "syrius_orbit/mqtt/TypedSubscriber.hpp"
+#include "VDA5050TopicContext.hpp"
+#include "TypedSubscriber.hpp"
 #include "syrius_orbit/vda5050_schemas/InstantActions.hpp"
 #include "syrius_orbit/vda5050_schemas/Connection.hpp"
 #include "syrius_orbit/vda5050_schemas/FactSheet.hpp"
