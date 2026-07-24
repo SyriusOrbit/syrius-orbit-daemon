@@ -60,16 +60,16 @@ public:
         const nlohmann::json payload_json = nlohmann::json::parse(meta.payload);
         payload = payload_json.get<T>();
       } catch (const nlohmann::json::parse_error &e) {
-        PLOGE << "TypedSubscriber failed to parse json payload for topic '"
+        PLOGW << "TypedSubscriber failed to parse json payload for topic '"
               << meta.topic << "': " << e.what();
         return;
       } catch (const nlohmann::json::type_error &e) {
-        PLOGE
+        PLOGW
             << "TypedSubscriber failed to deserialize json to type for topic '"
             << meta.topic << "': " << e.what();
         return;
       } catch (const std::exception &e) {
-        PLOGE
+        PLOGW
             << "TypedSubscriber failed to deserialize json to type for topic '"
             << meta.topic << "' due to unknown exception: " << e.what();
         return;
