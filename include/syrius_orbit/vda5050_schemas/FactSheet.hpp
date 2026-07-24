@@ -156,7 +156,9 @@ struct MaximumArrayLengths {
   if ((source).member.has_value())                                             \
     (target_json)[(key)] = *((source).member);
 
-inline void to_json(nlohmann::json &j, const MaximumArrayLengths &data) {
+template <typename BasicJsonType, nlohmann::detail::enable_if_t<
+            nlohmann::detail::is_basic_json<BasicJsonType>::value, int> = 0>
+inline void to_json(BasicJsonType &j, const MaximumArrayLengths &data) {
   PUT_OPT(j, data, order_nodes, "order.nodes");
   PUT_OPT(j, data, order_edges, "order.edges");
   PUT_OPT(j, data, node_actions, "node.actions");
@@ -183,7 +185,9 @@ inline void to_json(nlohmann::json &j, const MaximumArrayLengths &data) {
       !(json_obj).at((dotted_key)).is_null())                                  \
   (target).member = (json_obj).at((dotted_key)).get<std::int64_t>()
 
-inline void from_json(const nlohmann::json &j, MaximumArrayLengths &d) {
+template <typename BasicJsonType, nlohmann::detail::enable_if_t<
+            nlohmann::detail::is_basic_json<BasicJsonType>::value, int> = 0>
+inline void from_json(const BasicJsonType &j, MaximumArrayLengths &d) {
   if (not j.is_null()) {
     EXTRACT(d, j, order_nodes, "order.nodes");
     EXTRACT(d, j, order_edges, "order.edges");
