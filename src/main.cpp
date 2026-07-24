@@ -1,4 +1,5 @@
 #include "syrius_orbit/Daemon.hpp"
+#include "syrius_orbit/FileLineFormatter.h"
 #include "syrius_orbit/RuntimeConfig.hpp"
 
 #include <atomic>
@@ -14,7 +15,6 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
-
 
 namespace {
 
@@ -59,7 +59,6 @@ bool load_json_config_file(const std::string &file_path,
 int main(int argc, char **argv) {
   std::signal(SIGINT, &on_signal);
   std::signal(SIGTERM, &on_signal);
-
 
   argparse::ArgumentParser parser("syrius-orbit-daemon");
   syrius_orbit::RuntimeConfig config_cli;
@@ -161,9 +160,10 @@ int main(int argc, char **argv) {
       PLOGE << "Failed to load config file: " << config_cli.config_file_path;
   }
 
-  static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-  static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(
-      "/var/log/dbus2http/dbus2http.log", 10000000, 5);
+  static plog::ConsoleAppender<syrius_orbit::FileLineFormatter<true, true>>
+      consoleAppender;
+  static plog::RollingFileAppender<syrius_orbit::FileLineFormatter<true, true>>
+      fileAppender("/var/log/syrius-orbit/daemon.log", 10000000, 5);
 
 #ifdef NDEBUG
   if (parser.get<bool>("--verbose"))

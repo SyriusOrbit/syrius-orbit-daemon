@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <exception>
 #include <functional>
 #include <mosquittopp.h>
@@ -51,6 +52,21 @@ private:
   void handle_message(const ::mosquitto_message *msg) const {
     if (msg == nullptr || msg->topic == nullptr)
       return;
+
+    constexpr int kPayloadPreviewLimit = 120;
+    const int payload_prefix_len =
+        (msg->payload != nullptr && msg->payloadlen > 0)
+            ? std::min(msg->payloadlen, kPayloadPreviewLimit)
+            : 0;
+    std::string payload_prefix;
+    if (payload_prefix_len > 0)
+      payload_prefix.assign(static_cast<const char *>(msg->payload),
+                            static_cast<std::size_t>(payload_prefix_len));
+
+    PLOGD << "MqttSubscriber received message: topic='" << msg->topic
+          << "', qos=" << msg->qos << ", retain=" << msg->retain
+          << ", mid=" << msg->mid << ", payload='" << payload_prefix
+          << ((msg->payloadlen > payload_prefix_len) ? "...'." : "'.");
 
     std::vector<MessageCallback> callbacks;
     {

@@ -13,6 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(mosquitto)
 find_package(plog)
+add_compile_definitions(PLOG_CAPTURE_FILE)
 find_package(httplib REQUIRED)
 find_package(argparse REQUIRED)
 find_package(nlohmann_json REQUIRED)
