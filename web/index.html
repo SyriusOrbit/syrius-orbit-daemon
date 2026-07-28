@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>SyriusOrbit Daemon</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__brand">
+        <img class="brand-mark" src="assets/syriusorbit-logo.jpg" alt="SyriusOrbit logo">
+        <div>
+          <h1>SyriusOrbit Daemon</h1>
+          <p>AMR fleet monitor prototype</p>
+        </div>
+      </div>
+
+      <div class="topbar__status">
+        <span class="status-pill" id="cloudStatus">Cloud: Connected</span>
+        <span class="status-pill" id="edgeStatus">Edge: 5 robots online</span>
+        <span class="status-pill" id="cacheStatus">Cache: 15 items</span>
+      </div>
+
+      <div class="topbar__actions">
+        <button class="ghost-btn mobile-only" type="button" data-drawer="robots">Robots</button>
+        <button class="ghost-btn mobile-only" type="button" data-drawer="details">Details</button>
+        <button class="ghost-btn" type="button" id="refreshBtn">Refresh</button>
+      </div>
+    </header>
+
+    <section class="overview-grid" aria-label="Fleet overview">
+      <article class="metric-card">
+        <span class="metric-card__label">Cloud link</span>
+        <strong id="overviewCloud">Connected</strong>
+        <small id="overviewCloudMeta">broker 192.168.1.100:1883</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Fleet status</span>
+        <strong id="overviewFleet">5 / 5 online</strong>
+        <small id="overviewFleetMeta">1 robot in warning</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">Cache backlog</span>
+        <strong id="overviewCache">15 queued</strong>
+        <small id="overviewCacheMeta">oldest message 2 min ago</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__label">System load</span>
+        <strong id="overviewLoad">CPU 42% / MEM 58%</strong>
+        <small id="overviewDisk">Disk 64% free</small>
+      </article>
+    </section>
+
+    <main class="workspace">
+      <aside class="panel panel--left drawer" id="robotsDrawer">
+        <div class="panel__header">
+          <div>
+            <h2>Robots</h2>
+            <p>Filter and select a robot</p>
+          </div>
+          <button class="icon-btn mobile-only" type="button" data-close-drawer="robots">Close</button>
+        </div>
+
+        <div class="filter-tabs" role="tablist" aria-label="Robot filters">
+          <button class="tab is-active" type="button" data-filter="all">All</button>
+          <button class="tab" type="button" data-filter="online">Online</button>
+          <button class="tab" type="button" data-filter="warning">Warning</button>
+          <button class="tab" type="button" data-filter="offline">Offline</button>
+        </div>
+
+        <div class="robot-list" id="robotList" aria-live="polite"></div>
+      </aside>
+
+      <section class="panel panel--center">
+        <div class="panel__header">
+          <div>
+            <h2>Fleet board</h2>
+            <p>Central placeholder for the future 3D scene</p>
+          </div>
+          <div class="panel__header-meta" id="boardMeta">Selected: AGV-001</div>
+        </div>
+
+        <div class="board">
+          <div class="board__grid"></div>
+          <div class="board__warehouse">
+            <span>Warehouse map placeholder</span>
+            <strong>Render target for future 3D / 2D view</strong>
+          </div>
+          <div class="board__robots" id="boardRobots"></div>
+        </div>
+
+        <div class="board-footer">
+          <div class="board-footer__item">
+            <span>Focused robot</span>
+            <strong id="focusedRobotName">AGV-001</strong>
+          </div>
+          <div class="board-footer__item">
+            <span>Task state</span>
+            <strong id="focusedTaskState">Moving to pickup</strong>
+          </div>
+          <div class="board-footer__item">
+            <span>Last update</span>
+            <strong id="focusedUpdateAge">2s ago</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel panel--right drawer" id="detailsDrawer">
+        <div class="panel__header">
+          <div>
+            <h2>Robot details</h2>
+            <p>Live status and local controls</p>
+          </div>
+          <button class="icon-btn mobile-only" type="button" data-close-drawer="details">Close</button>
+        </div>
+
+        <section class="detail-card">
+          <div class="detail-card__row">
+            <span>ID</span>
+            <strong id="detailId">AGV-001</strong>
+          </div>
+          <div class="detail-card__row">
+            <span>Status</span>
+            <strong id="detailStatus">Moving</strong>
+          </div>
+          <div class="detail-card__row">
+            <span>Battery</span>
+            <strong id="detailBattery">88%</strong>
+          </div>
+          <div class="detail-card__row">
+            <span>Position</span>
+            <strong id="detailPosition">10.2, 5.1, 90°</strong>
+          </div>
+          <div class="detail-card__row">
+            <span>Task</span>
+            <strong id="detailTask">TASK-123</strong>
+          </div>
+          <div class="detail-card__row">
+            <span>Heartbeat</span>
+            <strong id="detailHeartbeat">2s ago</strong>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <button class="control-btn" type="button" data-action="pause">Pause</button>
+          <button class="control-btn" type="button" data-action="resume">Resume</button>
+          <button class="control-btn control-btn--danger" type="button" data-action="e-stop">Emergency Stop</button>
+          <button class="control-btn" type="button" data-action="reset">Reset</button>
+        </section>
+
+        <details class="json-panel" open>
+          <summary>Raw JSON snapshot</summary>
+          <div class="json-panel__tools">
+            <button class="ghost-btn" type="button" id="copyJsonBtn">Copy</button>
+          </div>
+          <pre id="rawJson"></pre>
+        </details>
+      </aside>
+    </main>
+
+    <footer class="bottom-bar">
+      <button class="primary-btn" type="button" data-action="new-task">New Task</button>
+      <button class="danger-btn" type="button" data-action="global-stop">Global Emergency Stop</button>
+      <button class="ghost-btn" type="button" data-action="settings">System Settings</button>
+    </footer>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <div class="toast-host" id="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="mock-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
