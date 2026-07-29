@@ -16,7 +16,6 @@ find_package(plog)
 add_compile_definitions(PLOG_CAPTURE_FILE)
 find_package(httplib REQUIRED)
 find_package(argparse REQUIRED)
-find_package(nlohmann_json REQUIRED)
 find_package(mosquitto REQUIRED COMPONENTS libmosquittopp)
 
 include_directories(include)
@@ -34,7 +33,6 @@ target_link_libraries(
     mosquitto::mosquitto
     plog::plog
     httplib::httplib
-    nlohmann_json::nlohmann_json
     argparse::argparse
 )
 
