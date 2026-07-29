@@ -19,38 +19,51 @@
       </div>
 
       <div class="topbar__status">
-        <span class="status-pill" id="cloudStatus">Cloud: Connected</span>
-        <span class="status-pill" id="edgeStatus">Edge: 5 robots online</span>
-        <span class="status-pill" id="cacheStatus">Cache: 15 items</span>
+        <span class="status-pill" id="cloudStatus">Cloud broker: Connected</span>
+        <span class="status-pill" id="edgeStatus">Local broker: Connected</span>
       </div>
 
       <div class="topbar__actions">
         <button class="ghost-btn mobile-only" type="button" data-drawer="robots">Robots</button>
         <button class="ghost-btn mobile-only" type="button" data-drawer="details">Details</button>
-        <button class="ghost-btn" type="button" id="refreshBtn">Refresh</button>
       </div>
     </header>
 
     <section class="overview-grid" aria-label="Fleet overview">
       <article class="metric-card">
-        <span class="metric-card__label">Cloud link</span>
+        <span class="metric-card__label">Cloud broker stats</span>
         <strong id="overviewCloud">Connected</strong>
         <small id="overviewCloudMeta">broker 192.168.1.100:1883</small>
       </article>
       <article class="metric-card">
-        <span class="metric-card__label">Fleet status</span>
+        <span class="metric-card__label">Local robot comm stats</span>
         <strong id="overviewFleet">5 / 5 online</strong>
         <small id="overviewFleetMeta">1 robot in warning</small>
       </article>
       <article class="metric-card">
-        <span class="metric-card__label">Cache backlog</span>
+        <span class="metric-card__label">Local cache stats</span>
         <strong id="overviewCache">15 queued</strong>
         <small id="overviewCacheMeta">oldest message 2 min ago</small>
       </article>
       <article class="metric-card">
         <span class="metric-card__label">System load</span>
-        <strong id="overviewLoad">CPU 42% / MEM 58%</strong>
-        <small id="overviewDisk">Disk 64% free</small>
+        <div class="metric-usage">
+          <div class="metric-usage__row">
+            <span class="metric-usage__name">CPU</span>
+            <div class="battery"><span id="overviewCpuBar" style="width:42%"></span></div>
+            <strong id="overviewCpuValue">42%</strong>
+          </div>
+          <div class="metric-usage__row">
+            <span class="metric-usage__name">MEM</span>
+            <div class="battery"><span id="overviewMemBar" style="width:58%"></span></div>
+            <strong id="overviewMemValue">58%</strong>
+          </div>
+          <div class="metric-usage__row">
+            <span class="metric-usage__name">Disk</span>
+            <div class="battery"><span id="overviewDiskBar" style="width:64%"></span></div>
+            <strong id="overviewDiskValue">64%</strong>
+          </div>
+        </div>
       </article>
     </section>
 
@@ -66,9 +79,9 @@
 
         <div class="filter-tabs" role="tablist" aria-label="Robot filters">
           <button class="tab is-active" type="button" data-filter="all">All</button>
-          <button class="tab" type="button" data-filter="online">Online</button>
-          <button class="tab" type="button" data-filter="warning">Warning</button>
-          <button class="tab" type="button" data-filter="offline">Offline</button>
+          <button class="tab" type="button" data-filter="online">On</button>
+          <button class="tab" type="button" data-filter="warning">Warn</button>
+          <button class="tab" type="button" data-filter="offline">Off</button>
         </div>
 
         <div class="robot-list" id="robotList" aria-live="polite"></div>
@@ -161,6 +174,49 @@
       </aside>
     </main>
 
+    <section class="log-dock" aria-label="Robot history messages">
+      <div class="log-dock__header">
+        <div>
+          <h2>Robot message history</h2>
+          <p>Filter by serial number, topic and message text</p>
+        </div>
+        <div class="log-dock__meta" id="logCount">Showing 0 / 0</div>
+      </div>
+
+      <div class="log-filters">
+        <label class="log-filter">
+          <span>Serial number</span>
+          <select id="logFilterSerial">
+            <option value="all">All serial numbers</option>
+          </select>
+        </label>
+        <label class="log-filter">
+          <span>Topic</span>
+          <select id="logFilterTopic">
+            <option value="all">All topics</option>
+          </select>
+        </label>
+        <label class="log-filter log-filter--search">
+          <span>Search message</span>
+          <input id="logFilterSearch" type="search" placeholder="Search in full message JSON">
+        </label>
+        <button class="ghost-btn" type="button" id="clearLogBtn">Clear Logs</button>
+      </div>
+
+      <div class="log-table">
+        <div class="log-row log-row--head">
+          <div>headerId</div>
+          <div>timestamp</div>
+          <div>version</div>
+          <div>manufacturer</div>
+          <div>serialNumber</div>
+          <div>topic</div>
+          <div>message</div>
+        </div>
+        <div class="log-rows" id="logRows" aria-live="polite"></div>
+      </div>
+    </section>
+
     <footer class="bottom-bar">
       <button class="primary-btn" type="button" data-action="new-task">New Task</button>
       <button class="danger-btn" type="button" data-action="global-stop">Global Emergency Stop</button>
@@ -170,6 +226,22 @@
 
   <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
   <div class="toast-host" id="toastHost" aria-live="polite" aria-atomic="true"></div>
+  <div class="message-modal-backdrop" id="messageModalBackdrop" hidden>
+    <section class="message-modal" role="dialog" aria-modal="true" aria-label="Message detail">
+      <header class="message-modal__header">
+        <strong id="messageModalTitle">Message 1 / 1</strong>
+        <div class="message-modal__actions">
+          <div class="message-modal__nav">
+            <button class="ghost-btn" type="button" id="messageModalPrevBtn">Previous</button>
+            <button class="ghost-btn" type="button" id="messageModalNextBtn">Next</button>
+          </div>
+          <button class="primary-btn" type="button" id="messageModalCopyBtn">Copy</button>
+          <button class="danger-btn" type="button" id="messageModalCloseBtn">Close</button>
+        </div>
+      </header>
+      <pre id="messageModalContent"></pre>
+    </section>
+  </div>
 
   <script src="mock-data.js"></script>
   <script src="app.js"></script>

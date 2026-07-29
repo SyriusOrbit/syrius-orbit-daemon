@@ -39,7 +39,11 @@
 
     return {
       cloudConnected: true,
+      localBrokerConnected: true,
       broker: "192.168.1.100:1883",
+      localBroker: "127.0.0.1:1883",
+      cloudDropCount: 0,
+      localBrokerDropCount: 0,
       uptimeSec: 9000,
       cacheQueueSize: 15,
       cacheOldestMinutes: 2,
