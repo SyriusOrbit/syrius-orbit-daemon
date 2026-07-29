@@ -40,7 +40,8 @@ At the current stage, this repository is still an early skeleton and does not ye
 
 The daemon now starts two edge-facing components managed by the daemon lifecycle:
 
-- `SpatialService` (HTTP): exposes `GET /health`.
+- `SpatialService` (HTTP route module): registers `GET /health` on the daemon-owned HTTP server.
+- Daemon HTTP static hosting: serves `web` directory under `/console`.
 - `FleetGateway` (MQTT): starts a `VDA5050Proxy` bridge with two endpoints:
   - local endpoint subscribes `state`, `visualization`, `connection`, `factsheet`, then forwards to cloud.
   - cloud endpoint subscribes `order`, `instantActions`, `responses`, `zoneSet`, then forwards to local.

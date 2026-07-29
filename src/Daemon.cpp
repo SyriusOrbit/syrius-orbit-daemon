@@ -1,12 +1,24 @@
 #include "syrius_orbit/Daemon.hpp"
 
 #include <chrono>
+#include <string>
 #include <thread>
 #include <utility>
 
+#include <httplib.h>
 #include <plog/Log.h>
 
 namespace syrius_orbit {
+
+namespace {
+
+void set_not_found_response(httplib::Response& res) {
+    res.status = 404;
+    res.body = "Not Found";
+    res.set_header("Connection", "close");
+}
+
+}  // namespace
 
 Daemon::Daemon(RuntimeConfig config) : config_(std::move(config)) {}
 
@@ -23,10 +35,44 @@ int Daemon::run() {
     int exit_code = 0;
     PLOGI << "Daemon started.";
 
+    httplib::Server http_server;
+    http_server.set_pre_routing_handler([](const httplib::Request& req, httplib::Response& res) {
+        if (req.method == "GET" && (req.path == "/console" || req.path == "/console/"))
+            res.set_redirect("/console/index.html", 301);
+        return httplib::Server::HandlerResponse::Unhandled;
+    });
+    http_server.set_error_handler([](const httplib::Request&, httplib::Response& res) {
+        if (res.status == 404) {
+            set_not_found_response(res);
+        }
+    });
+
     if (!spatial_service_.init(config_)) {
         PLOGE << "SpatialService init failed. Continuing without Spatial API.";
-    } else if (!spatial_service_.start() && !stop_requested_.load(std::memory_order_relaxed)) {
+    } else if (!spatial_service_.bindRoutes(http_server) &&
+               !stop_requested_.load(std::memory_order_relaxed)) {
         PLOGE << "SpatialService unavailable. Continuing without Spatial API.";
+    }
+
+    if (!http_server.set_mount_point("/console", "web")) {
+        PLOGE << "Static file mount failed for '/console' -> 'web'.";
+    }
+
+    bool http_server_started = false;
+    std::thread http_thread;
+    const std::string bind_host = (config_.http_host == "*") ? "0.0.0.0" : config_.http_host;
+    if (!http_server.bind_to_port(bind_host, config_.http_port)) {
+        PLOGE << "HTTP server failed to bind on " << config_.http_host << ":" << config_.http_port;
+    } else {
+        {
+            std::lock_guard lock(http_server_control_mutex_);
+            stop_http_server_fn_ = [&http_server]() { http_server.stop(); };
+        }
+        if (!stop_requested_.load(std::memory_order_relaxed)) {
+            http_server_started = true;
+            PLOGI << "HTTP server listening on " << config_.http_host << ":" << config_.http_port;
+            http_thread = std::thread([&http_server]() { http_server.listen_after_bind(); });
+        }
     }
 
     if (!stop_requested_.load(std::memory_order_relaxed)) {
@@ -41,6 +87,22 @@ int Daemon::run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
+    std::function<void()> stop_http_server_fn;
+    {
+        std::lock_guard lock(http_server_control_mutex_);
+        stop_http_server_fn = stop_http_server_fn_;
+    }
+    if (stop_http_server_fn) {
+        stop_http_server_fn();
+    }
+    if (http_server_started && http_thread.joinable()) {
+        http_thread.join();
+    }
+    {
+        std::lock_guard lock(http_server_control_mutex_);
+        stop_http_server_fn_ = nullptr;
+    }
+
     spatial_service_.stop();
     fleet_gateway_.stop();
 
@@ -50,7 +112,14 @@ int Daemon::run() {
 
 void Daemon::stop() {
     stop_requested_.store(true, std::memory_order_relaxed);
-    spatial_service_.stop();
+    std::function<void()> stop_http_server_fn;
+    {
+        std::lock_guard lock(http_server_control_mutex_);
+        stop_http_server_fn = stop_http_server_fn_;
+    }
+    if (stop_http_server_fn) {
+        stop_http_server_fn();
+    }
 }
 
 }  // namespace syrius_orbit
