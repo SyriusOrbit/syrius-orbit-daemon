@@ -3,6 +3,7 @@
 This document defines AI-facing context, authoring rules, and execution workflow for the `syrius-orbit-daemon` repository.
 
 For architecture, components, and code style details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+For project progress and history, see [STATUS.md](STATUS.md).
 
 ## Scope and Source of Truth
 
@@ -36,7 +37,8 @@ When an AI agent updates this repository, use the workflow below:
 2. **Make the smallest change set** that satisfies the request.
 3. **Preserve naming style, file organization, and existing conventions** as defined in `ARCHITECTURE.md`.
 4. **Verify structural consistency** across related source files and contracts.
-5. **Summarize** what changed, why it changed, and what remains out of scope.
+5. **Update STATUS.md** when completing a Milestone, Feature, or Task. Move the previous Current Status into History and write the new status.
+6. **Summarize** what changed, why it changed, and what remains out of scope.
 
 ## Validation and Definition of Done
 
