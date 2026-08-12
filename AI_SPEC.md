@@ -2,6 +2,8 @@
 
 This document defines AI-facing context, authoring rules, and execution workflow for the `syrius-orbit-daemon` repository.
 
+For architecture, components, and code style details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## Scope and Source of Truth
 
 [`syrius-orbit-contracts`](https://github.com/SyriusOrbit/syrius-orbit-contracts) is the single source of truth for all interface contracts in the SyriusOrbit platform.
@@ -9,56 +11,6 @@ This document defines AI-facing context, authoring rules, and execution workflow
 This daemon repository is an implementation of those contracts. It provides the edge runtime that realizes the behavior defined by the contracts.
 
 All changes to this repository must remain consistent with the corresponding contracts.
-
-## Architecture Snapshot
-
-SyriusOrbit is a spatial information and scheduling platform for indoor AMRs with edge-cloud collaboration.
-
-The daemon is designed to implement all APIs defined in the contracts. Current completion status:
-
-- **Fleet Control API**: Partial implementation, low overall completion.
-- **Spatial API**: Basic skeleton with `GET /health`.
-- **Fleet Management API**: Not yet implemented.
-
-### Deployment Modes
-
-The daemon can be deployed in two modes:
-
-| Aspect | Embedded Robot | Edge Node |
-|--------|---------------|-----------|
-| Default connection limit | 1 | 256 |
-| TLS / certificates | Not required | Required |
-| Purpose | Low-latency local robot interaction | Multi-robot fleet coordination |
-
-### Core Components
-
-- **Daemon** (`Daemon.hpp`, `Daemon.cpp`): Main lifecycle management, HTTP server, startup/shutdown orchestration.
-- **SpatialService** (`SpatialService.hpp`, `SpatialService.cpp`): HTTP route module exposing spatial API endpoints.
-- **FleetGateway** (`FleetGateway.hpp`, `FleetGateway.cpp`): Manages the VDA5050 proxy lifecycle.
-- **VDA5050Proxy** (`VDA5050Proxy.hpp`, `VDA5050Proxy.cpp`): MQTT bridge between local and cloud endpoints, forwarding VDA5050 messages bidirectionally.
-
-## Build and Run
-
-> **Note**: This section is a placeholder. Build commands are not yet specified.
-
-## Test and Lint
-
-> **Note**: This section is a placeholder. No test or lint commands are currently available.
-
-## Code Style
-
-The codebase follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following deviations:
-
-- **Header guard**: Use `#pragma once` instead of include guards (macro guards).
-- **File naming**: File names use PascalCase matching the class name (e.g., `FleetGateway.hpp`), not snake_case.
-- **Header extension**: Use `.hpp` for C++ header files.
-- **Exceptions**: Limited, cautious use of exceptions is allowed (Google Style generally disallows them).
-
-### Additional Conventions
-
-- **Directory layout**: Header files live under `include/syrius_orbit/`, source files under `src/`.
-- **Logging**: Use the `plog` library with `PLOGI` / `PLOGE` / `PLOGD` macros. No specific log message format is enforced.
-- **C++ standard**: C++20.
 
 ## Commit Message
 
@@ -82,7 +34,7 @@ When an AI agent updates this repository, use the workflow below:
 
 1. **Read related files** before editing. Understand existing code, neighboring modules, and the relevant contracts.
 2. **Make the smallest change set** that satisfies the request.
-3. **Preserve naming style, file organization, and existing conventions** as defined in this document.
+3. **Preserve naming style, file organization, and existing conventions** as defined in `ARCHITECTURE.md`.
 4. **Verify structural consistency** across related source files and contracts.
 5. **Summarize** what changed, why it changed, and what remains out of scope.
 
