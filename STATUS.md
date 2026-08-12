@@ -11,43 +11,32 @@ Progress items are tracked at four levels of granularity, from coarsest to fines
 | L3 | **Task** | A concrete implementable work item | Create VDA5050Proxy class |
 | L4 | **Fix / Chore** | A small code-level fix or maintenance task | Fix MQTT connection timeout bug |
 
-The status file records items down to L3. L4 items are captured in git history only.
+Completion dates are written as `[YYYY-MM-DD]`. Items without a recorded date use `[--]` as a placeholder.
 
-Within each section, items are ordered from newest to oldest (most recent first).
+Items are ordered newest to oldest. A Milestone is placed at the top of its feature group, with its features ordered newest-first below.
 
 ## Current Status
 
-New project infrastructure established. The project now follows a spec-driven design approach with dedicated files for AI agent rules, architecture documentation, and progress tracking.
+- [Milestone] Data model and storage
+  - [Feature] SQLite dependency and build integration
+  - [Feature] Core table schema design
+  - [Feature] Schema migration system
+  - [Feature] Base data access layer
 
-### Recently Completed
+## Recently Completed
 
-- [Milestone] AI infrastructure established
-  - [Feature] Progress tracking file created (STATUS.md)
-  - [Feature] Architecture documentation created (ARCHITECTURE.md)
-  - [Feature] AI agent workflow and rules defined (AI_SPEC.md)
+- [Milestone] AI infrastructure established [--]
+- [Feature] Progress tracking file created (STATUS.md) [--]
+- [Feature] Architecture documentation created (ARCHITECTURE.md) [--]
+- [Feature] AI agent workflow and rules defined (AI_SPEC.md) [--]
+- [Milestone] Core implementation framework [--]
+- [Feature] Demo web page for health check [--]
+- [Feature] SpatialService with HTTP endpoint [--]
+- [Feature] VDA5050Proxy for MQTT bridge (local ↔ cloud) [--]
+- [Feature] VDA5050 message handling (publisher/subscriber) [--]
+- [Feature] MQTT infrastructure (publisher/subscriber) [--]
+- [Feature] VDA5050 JSON schema headers generated [--]
+- [Feature] Add syrius-orbit-contracts as submodule [--]
+- [Feature] Command-line and config file configuration parsing [--]
+- [Feature] Basic project skeleton and CMake build system [--]
 
-- [Milestone] Core implementation framework
-  - [Feature] Demo web page for health check
-  - [Feature] SpatialService with HTTP endpoint
-  - [Feature] VDA5050Proxy for MQTT bridge (local ↔ cloud)
-  - [Feature] VDA5050 message handling (publisher/subscriber)
-  - [Feature] MQTT infrastructure (publisher/subscriber)
-  - [Feature] VDA5050 JSON schema headers generated
-  - [Feature] Add syrius-orbit-contracts as submodule
-  - [Feature] Command-line and config file configuration parsing
-  - [Feature] Basic project skeleton and CMake build system
-
-### Next Up
-
-- Fleet Control API implementation
-- Spatial API implementation
-- Build and test infrastructure
-
-## History
-
-### 2026-08-12
-
-- [Milestone] AI infrastructure established
-  - [Feature] Progress tracking file created (STATUS.md)
-  - [Feature] Architecture documentation created (ARCHITECTURE.md)
-  - [Feature] AI agent workflow and rules defined (AI_SPEC.md)
