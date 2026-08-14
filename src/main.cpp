@@ -10,7 +10,7 @@
 #include <thread>
 
 #include <argparse/argparse.hpp>
-#include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
 #include <plog/Appenders/RollingFileAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
       PLOGE << "Failed to load config file: " << config_cli.config_file_path;
   }
 
-  static plog::ConsoleAppender<syrius_orbit::FileLineFormatter<true, true>>
+  static plog::ColorConsoleAppender<syrius_orbit::FileLineFormatter<true, true>>
       consoleAppender;
   static plog::RollingFileAppender<syrius_orbit::FileLineFormatter<true, true>>
       fileAppender("/var/log/syrius-orbit/daemon.log", 10000000, 5);
