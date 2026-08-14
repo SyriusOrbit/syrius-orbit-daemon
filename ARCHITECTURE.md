@@ -124,7 +124,57 @@ syrius-orbit-daemon/
 
 ## Build and Run
 
-> **Note**: This section is a placeholder. Build commands are not yet specified.
+### Prerequisites
+
+- **Conan** (>= 2.0.5)
+- **CMake** (>= 3.20)
+
+### Build Process
+
+The project uses CMake with `conan_provider.cmake` as the dependency provider. Dependencies are resolved automatically when CMake configures the project.
+
+#### Step 1: Configure CMake
+
+```bash
+mkdir build && cd build
+cmake "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake" ..
+```
+
+#### Step 2: Build
+
+```bash
+cmake --build . --config Release
+```
+
+### Multi-Config Generator Behaviour
+
+With Visual Studio (the default generator on Windows), CMake is a multi-config generator. The `conan_provider` installs Conan dependencies for **both Release and Debug** configurations by default, which may cause unexpected source builds if Debug binaries are not cached.
+
+To avoid this, either:
+
+- **Pre-cache Debug binaries** (recommended for full development): Before running CMake, run:
+
+  ```bash
+  conan install . --build=missing -s build_type=Debug
+  ```
+
+- **Restrict to Release only** (recommended for CI/simple builds):
+
+  ```bash
+  cmake "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake" "-DCONAN_INSTALL_BUILD_CONFIGURATIONS=Release" ..
+  ```
+
+### Conan Profile Notes
+
+The `conan_provider` merges the default profile with an auto-detected profile by default. The auto-detected profile may detect a different compiler version than the one in the default profile (e.g., auto-detected `compiler.version=195` vs default `compiler.version=194`), causing Conan to miss the pre-built binary cache and trigger source compilation.
+
+To avoid this, the project's `conan_provider.cmake` has been configured to use only the default profile:
+
+```cmake
+set(CONAN_HOST_PROFILE "default" CACHE STRING "Conan host profile")
+```
+
+This ensures the same profile is used for both `conan install` and the CMake build.
 
 ## Test and Lint
 

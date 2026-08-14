@@ -6,3 +6,4 @@ requirements:
   - "plog/1.1.10"
   - "cpp-httplib/0.47.0"
   - "argparse/3.2"
+  - "sqlitecpp/3.3.3"
