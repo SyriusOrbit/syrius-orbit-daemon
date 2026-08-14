@@ -17,7 +17,7 @@ add_compile_definitions(PLOG_CAPTURE_FILE)
 find_package(httplib REQUIRED)
 find_package(argparse REQUIRED)
 find_package(mosquitto REQUIRED COMPONENTS libmosquittopp)
-#find_package(SQLiteCpp REQUIRED)
+find_package(SQLiteCpp REQUIRED)
 
 include_directories(include)
 add_executable(
@@ -35,7 +35,7 @@ target_link_libraries(
     plog::plog
     httplib::httplib
     argparse::argparse
-#    SQLiteCpp
+    SQLiteCpp
 )
 
 if(WIN32)
