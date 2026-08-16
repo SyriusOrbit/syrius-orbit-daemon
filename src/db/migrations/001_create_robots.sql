@@ -7,6 +7,11 @@
 -- robot_id is composed as "{manufacturer}.{serialNumber}" and is the
 -- primary key. site_id is NULL for orphan robots (valid business state).
 --
+-- suspended and archived are management-side flags set via PATCH.
+-- suspended excludes the robot from new order assignment while it keeps
+-- receiving MQTT state messages. archived hides the robot from default
+-- listings but keeps it queryable; archive is irreversible via the API.
+--
 -- factsheet stores the complete VDA 5050 factsheet message reported by the
 -- robot after a factsheetRequest instant action. It is kept as one JSON
 -- column to preserve the nested factsheet structure (typeSpecification,
@@ -23,6 +28,8 @@ CREATE TABLE robots (
     serial_number     TEXT    NOT NULL,                  -- header.serialNumber
     site_id           TEXT    DEFAULT NULL,              -- NULL = orphan, mutable via PATCH
     display_name      TEXT    DEFAULT NULL,              -- management-side field
+    suspended         INTEGER NOT NULL DEFAULT 0,        -- excluded from new order assignment
+    archived          INTEGER NOT NULL DEFAULT 0,        -- hidden from default listings
     connection_state  TEXT    NOT NULL DEFAULT 'OFFLINE',-- VDA5050 connectionState enum
     operating_mode    TEXT    DEFAULT NULL,              -- VDA5050 state.operatingMode
     driving           INTEGER NOT NULL DEFAULT 0,        -- 0/1
