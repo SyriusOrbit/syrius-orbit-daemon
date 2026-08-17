@@ -25,13 +25,13 @@ int SchemaMigrator::migrate() {
 
   int count = 0;
   for (const auto& migration : EMBEDDED_MIGRATIONS) {
-    if (applied.contains(migration.version)) continue;
+    if (applied.contains(std::string(migration.version))) continue;
 
     PLOGI << "Applying migration " << migration.version << " " << migration.name;
 
     try {
       SQLite::Transaction txn(db_);
-      db_.execMulti(std::string(migration.sql));
+      db_.exec(std::string(migration.sql));
 
       SQLite::Statement insert(
           db_,
