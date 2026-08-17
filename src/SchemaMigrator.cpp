@@ -52,7 +52,7 @@ int SchemaMigrator::migrate() {
   if (count > 0)
     PLOGI << "Schema migration complete: applied " << count << " migration(s)";
   else
-    PLOGD << "Schema migration: database is up to date";
+    PLOGI << "Schema migration: database is up to date";
 
   return count;
 }

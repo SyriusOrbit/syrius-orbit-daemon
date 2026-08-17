@@ -79,9 +79,10 @@ Daemon::run() → httplib::Server
 ### Startup and Shutdown Order
 
 Startup:
-1. `Daemon::run()` creates and starts the HTTP server.
-2. `FleetGateway::init()` and `FleetGateway::start()` initialize and start the VDA5050 proxy.
-3. `SpatialService::init()` and `SpatialService::bindRoutes()` register routes on the HTTP server.
+1. `SchemaMigrator` applies pending SQL migrations to `config_.db_path`. Failure aborts daemon startup.
+2. `Daemon::run()` creates and starts the HTTP server.
+3. `FleetGateway::init()` and `FleetGateway::start()` initialize and start the VDA5050 proxy.
+4. `SpatialService::init()` and `SpatialService::bindRoutes()` register routes on the HTTP server.
 
 Shutdown (reverse order):
 1. `SpatialService` is stopped first.
@@ -89,6 +90,7 @@ Shutdown (reverse order):
 3. HTTP server is stopped last.
 
 Error handling:
+- Schema migration failure causes daemon startup to abort.
 - Fleet startup failure causes daemon startup to fail.
 - Spatial startup failure is logged but does not block daemon startup.
 

@@ -66,6 +66,10 @@ int main(int argc, char **argv) {
       .default_value(config_cli.config_file_path)
       .nargs(1)
       .metavar("path");
+  parser.add_argument("--db-path")
+      .default_value(config_cli.db_path)
+      .nargs(1)
+      .metavar("path");
   parser.add_argument("--http-host")
       .default_value(config_cli.http_host)
       .nargs(1)
@@ -131,6 +135,7 @@ int main(int argc, char **argv) {
   }
 
   config_cli.config_file_path = parser.get<std::string>("--config");
+  config_cli.db_path = parser.get<std::string>("--db-path");
   config_cli.http_host = parser.get<std::string>("--http-host");
   config_cli.http_port = static_cast<std::uint16_t>(
       std::stoi(parser.get<std::string>("--http-port")));

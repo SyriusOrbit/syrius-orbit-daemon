@@ -8,6 +8,8 @@
 #include <httplib.h>
 #include <plog/Log.h>
 
+#include "syrius_orbit/SchemaMigrator.hpp"
+
 namespace syrius_orbit {
 
 namespace {
@@ -23,6 +25,15 @@ void set_not_found_response(httplib::Response& res) {
 Daemon::Daemon(RuntimeConfig config) : config_(std::move(config)) {}
 
 int Daemon::run() {
+    try {
+        SchemaMigrator migrator(config_.db_path);
+        migrator.migrate();
+    } catch (const std::exception& e) {
+        PLOGE << "Schema migration failed (db_path=" << config_.db_path
+              << "): " << e.what();
+        return 1;
+    }
+
     if (!fleet_gateway_.init(config_)) {
         PLOGE << "FleetGateway init failed.";
         return 1;
