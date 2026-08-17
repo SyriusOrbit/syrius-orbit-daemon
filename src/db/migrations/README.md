@@ -7,11 +7,13 @@ All tables are created via numbered migration files under this directory.
 
 | Migration | Table | Description |
 |-----------|-------|-------------|
-| 000 | `schema_migrations` | Migration system metadata. |
 | 001 | `robots` | Robot inventory, live summary fields, and factsheet. |
 | 002 | `orders` | VDA 5050 order management. |
 | 003 | `instant_actions` | Instant action history. |
 | 004 | `maps` | Site-scoped map metadata with Spatial API references. |
+
+The `schema_migrations` table is created by `SchemaMigrator::bootstrap()`
+before any migration files are processed; it has no migration file.
 
 ## Storage Strategy
 
@@ -32,14 +34,14 @@ All tables are created via numbered migration files under this directory.
 
 ## Table Details
 
-### schema_migrations (Migration 000)
+### schema_migrations (bootstrap)
 
-Tracks which migrations have been applied. The migrator reads this table
-before executing pending migration files.
+Created by `SchemaMigrator::bootstrap()` before any migration files are
+processed. Tracks which migrations have been applied.
 
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
-| `version` | TEXT | PRIMARY KEY | Migration number, e.g. `"000"`, `"001"`. |
+| `version` | TEXT | PRIMARY KEY | Migration number, e.g. `"001"`, `"002"`. |
 | `name` | TEXT | NOT NULL | Descriptive name, e.g. `"create_robots"`. |
 | `executed_at` | TEXT | NOT NULL | ISO-8601 execution timestamp. |
 

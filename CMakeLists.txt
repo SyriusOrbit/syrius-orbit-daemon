@@ -20,6 +20,8 @@ find_package(mosquitto REQUIRED COMPONENTS libmosquittopp)
 find_package(SQLiteCpp REQUIRED)
 
 include_directories(include)
+include(cmake/migrations.cmake)
+
 add_executable(
     ${PROJECT_NAME}
     src/main.cpp
@@ -27,6 +29,8 @@ add_executable(
     src/SpatialService.cpp
     src/FleetGateway.cpp
     src/VDA5050Proxy.cpp
+    src/SchemaMigrator.cpp
+    ${MIGRATION_GENERATED_SOURCES}
 )
 target_link_libraries(
     ${PROJECT_NAME}
