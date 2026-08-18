@@ -30,6 +30,12 @@ add_executable(
     src/FleetGateway.cpp
     src/VDA5050Proxy.cpp
     src/SchemaMigrator.cpp
+    src/db/Database.cpp
+    src/db/Vda5050EventsRepository.cpp
+    src/db/RobotsRepository.cpp
+    src/db/OrdersRepository.cpp
+    src/db/InstantActionsRepository.cpp
+    src/db/MapsRepository.cpp
     ${MIGRATION_GENERATED_SOURCES}
 )
 target_link_libraries(

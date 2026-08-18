@@ -8,7 +8,7 @@
 #include <httplib.h>
 #include <plog/Log.h>
 
-#include "syrius_orbit/SchemaMigrator.hpp"
+#include "syrius_orbit/db/Database.hpp"
 
 namespace syrius_orbit {
 
@@ -22,12 +22,18 @@ void set_not_found_response(httplib::Response& res) {
 
 }  // namespace
 
-Daemon::Daemon(RuntimeConfig config) : config_(std::move(config)) {}
+Daemon::Daemon(RuntimeConfig config)
+    : config_(std::move(config)),
+      db_(config_.db_path),
+      vda5050_events_repo_(db_),
+      robots_repo_(db_),
+      orders_repo_(db_),
+      instant_actions_repo_(db_),
+      maps_repo_(db_) {}
 
 int Daemon::run() {
     try {
-        SchemaMigrator migrator(config_.db_path);
-        migrator.migrate();
+        db_.migrate();
     } catch (const std::exception& e) {
         PLOGE << "Schema migration failed (db_path=" << config_.db_path
               << "): " << e.what();

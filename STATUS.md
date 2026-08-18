@@ -29,10 +29,10 @@ Each item has a stable hierarchical ID assigned at creation and never renumbered
 ## Current Status
 
 - [M3] Data model and storage
-  - [M3F4] Base data access layer
 
 ## Recently Completed
 
+- [M3F4] Base data access layer [2026-08-18]
 - [M3F3] Schema migration system [2026-08-17]
 - [M3F2] Core table schema design [2026-08-16]
 - [M3F1] SQLite dependency and build integration [2026-08-14]
