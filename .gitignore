@@ -68,5 +68,8 @@ vcpkg_installed/
 Testing/
 .cache/
 
+# SQLite database files
+*.db
+
 # IDE
 .idea/
