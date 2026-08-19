@@ -38,8 +38,4 @@ bool FleetGateway::isRunning() const {
     return proxy_.isRunning();
 }
 
-void FleetGateway::setVda5050EventsRepository(Vda5050EventsRepository& repo) {
-    proxy_.setVda5050EventsRepository(repo);
-}
-
 }  // namespace syrius_orbit

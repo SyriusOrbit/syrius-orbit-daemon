@@ -29,6 +29,7 @@ add_executable(
     src/SpatialService.cpp
     src/FleetGateway.cpp
     src/VDA5050Proxy.cpp
+    src/Vda5050EventRecorder.cpp
     src/SchemaMigrator.cpp
     src/db/Database.cpp
     src/db/Vda5050EventsRepository.cpp

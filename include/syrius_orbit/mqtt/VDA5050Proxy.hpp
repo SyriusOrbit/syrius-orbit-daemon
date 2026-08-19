@@ -11,8 +11,6 @@
 
 namespace syrius_orbit {
 
-class Vda5050EventsRepository;
-
 class VDA5050Proxy {
 public:
   bool init(const RuntimeConfig &config);
@@ -20,7 +18,8 @@ public:
   void stop();
   [[nodiscard]] bool isRunning() const;
 
-  void setVda5050EventsRepository(Vda5050EventsRepository &repo);
+  VDA5050EndPoint *localEndpoint() { return local_endpoint_.get(); }
+  VDA5050EndPoint *cloudEndpoint() { return cloud_endpoint_.get(); }
 
 private:
   static bool parse_topic_prefix(const std::string &prefix,
@@ -42,7 +41,6 @@ private:
   MqttSubscriber cloud_client_;
   std::unique_ptr<VDA5050EndPoint> local_endpoint_;
   std::unique_ptr<VDA5050EndPoint> cloud_endpoint_;
-  Vda5050EventsRepository *events_repo_{nullptr};
 };
 
 } // namespace syrius_orbit

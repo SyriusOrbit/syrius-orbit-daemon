@@ -11,28 +11,27 @@ int64_t Vda5050EventsRepository::insert(const Vda5050Event& event) {
       "INSERT INTO vda5050_events "
       "(topic, item_id, received_at, manufacturer, serial_number, robot_id, "
       " direction, header_id, header_version, header_timestamp, payload) "
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      "VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'), ?, ?, ?, ?, ?, ?, ?, ?)");
 
   stmt.bind(1, event.topic);
   stmt.bind(2, event.item_id);
-  stmt.bind(3, event.received_at);
-  stmt.bind(4, event.manufacturer);
-  stmt.bind(5, event.serial_number);
-  stmt.bind(6, event.robot_id);
-  stmt.bind(7, event.direction);
+  stmt.bind(3, event.manufacturer);
+  stmt.bind(4, event.serial_number);
+  stmt.bind(5, event.robot_id);
+  stmt.bind(6, event.direction);
   if (event.header_id.has_value())
-    stmt.bind(8, *event.header_id);
+    stmt.bind(7, *event.header_id);
+  else
+    stmt.bind(7);
+  if (event.header_version.has_value())
+    stmt.bind(8, *event.header_version);
   else
     stmt.bind(8);
-  if (event.header_version.has_value())
-    stmt.bind(9, *event.header_version);
+  if (event.header_timestamp.has_value())
+    stmt.bind(9, *event.header_timestamp);
   else
     stmt.bind(9);
-  if (event.header_timestamp.has_value())
-    stmt.bind(10, *event.header_timestamp);
-  else
-    stmt.bind(10);
-  stmt.bind(11, event.payload);
+  stmt.bind(10, event.payload);
 
   stmt.exec();
   return db_.getLastInsertRowid();

@@ -8,6 +8,7 @@
 #include <httplib.h>
 #include <plog/Log.h>
 
+#include "syrius_orbit/Vda5050EventRecorder.hpp"
 #include "syrius_orbit/db/Database.hpp"
 
 namespace syrius_orbit {
@@ -47,11 +48,15 @@ int Daemon::run() {
         PLOGE << "FleetGateway init failed.";
         return 1;
     }
-    fleet_gateway_.setVda5050EventsRepository(events_repo_);
     if (!fleet_gateway_.start()) {
         PLOGE << "FleetGateway start failed. Daemon startup aborted.";
         return 1;
     }
+
+    Vda5050EventRecorder event_recorder(
+        fleet_gateway_.proxy().localEndpoint(),
+        fleet_gateway_.proxy().cloudEndpoint(), events_repo_);
+    event_recorder.attach();
 
     int exit_code = 0;
     PLOGI << "Daemon started.";
