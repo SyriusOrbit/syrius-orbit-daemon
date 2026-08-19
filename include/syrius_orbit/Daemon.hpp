@@ -26,7 +26,7 @@ public:
 private:
     RuntimeConfig config_;
     Database db_;
-    Vda5050EventsRepository vda5050_events_repo_;
+    Vda5050EventsRepository events_repo_;
     RobotsRepository robots_repo_;
     OrdersRepository orders_repo_;
     InstantActionsRepository instant_actions_repo_;

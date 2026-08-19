@@ -25,7 +25,7 @@ void set_not_found_response(httplib::Response& res) {
 Daemon::Daemon(RuntimeConfig config)
     : config_(std::move(config)),
       db_(config_.db_path),
-      vda5050_events_repo_(db_),
+      events_repo_(db_),
       robots_repo_(db_),
       orders_repo_(db_),
       instant_actions_repo_(db_),
@@ -47,6 +47,7 @@ int Daemon::run() {
         PLOGE << "FleetGateway init failed.";
         return 1;
     }
+    fleet_gateway_.setVda5050EventsRepository(events_repo_);
     if (!fleet_gateway_.start()) {
         PLOGE << "FleetGateway start failed. Daemon startup aborted.";
         return 1;

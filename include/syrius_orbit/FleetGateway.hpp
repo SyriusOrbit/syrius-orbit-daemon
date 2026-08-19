@@ -7,12 +7,16 @@
 
 namespace syrius_orbit {
 
+class Vda5050EventsRepository;
+
 class FleetGateway {
 public:
     bool init(const RuntimeConfig& config);
     bool start();
     void stop();
     [[nodiscard]] bool isRunning() const;
+
+    void setVda5050EventsRepository(Vda5050EventsRepository& repo);
 
 private:
     std::atomic_bool initialized_{false};

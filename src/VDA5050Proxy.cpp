@@ -5,6 +5,10 @@
 
 namespace syrius_orbit {
 
+void VDA5050Proxy::setVda5050EventsRepository(Vda5050EventsRepository &repo) {
+  events_repo_ = &repo;
+}
+
 bool VDA5050Proxy::init(const RuntimeConfig &config) {
   config_ = config;
   initialized_.store(true, std::memory_order_relaxed);
