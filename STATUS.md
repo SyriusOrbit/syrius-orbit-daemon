@@ -32,8 +32,6 @@ Each item has a stable hierarchical ID assigned at creation and never renumbered
 
 - [M4] Simulator integration & Fleet data display
   - [M4F1] Write model integration
-    - [M4F1T1] Inject `Vda5050EventsRepository` into `VDA5050Proxy` callback chain
-    - [M4F1T2] Implement `Vda5050Event` construction from MQTT topic metadata and serialized payload
     - [M4F1T3] Verify write model: start daemon with simulator, confirm `vda5050_events` table has records
   - [M4F2] Projection layer validation
     - [M4F2T1] Verify all 6 projectors correctly update read model tables from simulator messages
@@ -51,6 +49,8 @@ Each item has a stable hierarchical ID assigned at creation and never renumbered
 
 ## Recently Completed
 
+- [M4F1T2] Event recording via `Vda5050EventRecorder` as external listener on proxy [2026-08-19]
+- [M4F1T1] Inject `Vda5050EventsRepository` into proxy callback chain [2026-08-19]
 - [M3] Data model and storage [2026-08-19]
   - [M3F5] Projection layer [2026-08-19]
   - [M3F4] Base data access layer [2026-08-18]
