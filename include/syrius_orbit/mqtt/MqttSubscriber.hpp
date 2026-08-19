@@ -15,6 +15,7 @@ namespace syrius_orbit {
 class MqttSubscriber : public mosqpp::mosquittopp {
 public:
   using MessageCallback = std::function<void(const mosquitto_message &)>;
+  using ConnectCallback = std::function<void(int rc)>;
 
   explicit MqttSubscriber(const char *client_id = nullptr,
                           bool clean_session = true)
@@ -23,6 +24,10 @@ public:
   explicit MqttSubscriber(const std::string &client_id,
                           bool clean_session = true)
       : mosquittopp(client_id.c_str(), clean_session) {}
+
+  void setConnectCallback(ConnectCallback callback) {
+    connect_callback_ = std::move(callback);
+  }
 
   [[nodiscard]] bool Subscribe(const std::string &topic, int qos,
                                MessageCallback callback) {
@@ -40,6 +45,11 @@ public:
   }
 
 private:
+  void on_connect(int rc) override {
+    if (connect_callback_) {
+      connect_callback_(rc);
+    }
+  }
   struct SubscriptionEntry {
     std::string topic_filter;
     MessageCallback callback;
@@ -94,6 +104,7 @@ private:
 
   mutable std::mutex subscriptions_mutex_;
   std::vector<SubscriptionEntry> subscriptions_;
+  ConnectCallback connect_callback_;
 };
 
 } // namespace syrius_orbit

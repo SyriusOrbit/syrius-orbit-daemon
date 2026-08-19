@@ -68,6 +68,15 @@ void Vda5050EventRecorder::attach() {
                     msg.timestamp, nlohmann::json(msg).dump());
       });
 
+  if (cloud_ep_ != nullptr)
+    attachCloud();
+}
+
+void Vda5050EventRecorder::attachCloud() {
+  if (cloud_ep_ == nullptr || attached_cloud_)
+    return;
+  attached_cloud_ = true;
+
   (void)cloud_ep_->OnOrder([this](const vda5050::Order &msg,
                                    const MessageMeta &,
                                    const VDA5050TopicContext &context) {

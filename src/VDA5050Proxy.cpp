@@ -37,23 +37,23 @@ bool VDA5050Proxy::start() {
                         config_.mqtt_username, config_.mqtt_password) ||
       !configure_client(cloud_client_, config_.cloud_mqtt_client_id,
                         config_.cloud_mqtt_username,
-                        config_.cloud_mqtt_password) ||
-      !connect_client(local_client_, config_.mqtt_host, config_.mqtt_port,
-                      "local") ||
-      !connect_client(cloud_client_, config_.cloud_mqtt_host,
-                      config_.cloud_mqtt_port, "cloud")) {
+                        config_.cloud_mqtt_password)) {
+    stop();
+    return false;
+  }
+
+  // Phase 1: local broker connection is required.
+  if (!connect_client(local_client_, config_.mqtt_host, config_.mqtt_port,
+                      "local")) {
     stop();
     return false;
   }
 
   local_endpoint_ = std::make_unique<VDA5050EndPoint>(
       local_client_, VDA5050EndPoint::Side::Local, topic_template);
-  cloud_endpoint_ = std::make_unique<VDA5050EndPoint>(
-      cloud_client_, VDA5050EndPoint::Side::Cloud, topic_template);
 
-  if (!setup_bridge_callbacks() || !local_endpoint_->Init() ||
-      !cloud_endpoint_->Init()) {
-    PLOGE << "VDA5050Proxy failed to initialize endpoint bridge.";
+  if (!local_endpoint_->Init()) {
+    PLOGE << "VDA5050Proxy failed to initialize local endpoint.";
     stop();
     return false;
   }
@@ -65,12 +65,56 @@ bool VDA5050Proxy::start() {
     stop();
     return false;
   }
+
+  // Phase 2: cloud broker connection is optional (async).
+  cloud_client_.setConnectCallback([this](int rc) {
+    if (rc == MOSQ_ERR_SUCCESS) {
+      if (cloud_endpoint_ != nullptr)
+        return;  // already set up (reconnect)
+
+      VDA5050TopicContext topic_template_inner;
+      if (!parse_topic_prefix(config_.mqtt_topic_prefix, topic_template_inner))
+        return;
+
+      cloud_endpoint_ = std::make_unique<VDA5050EndPoint>(
+          cloud_client_, VDA5050EndPoint::Side::Cloud, topic_template_inner);
+
+      if (!cloud_endpoint_->Init()) {
+        PLOGE << "VDA5050Proxy failed to initialize cloud endpoint.";
+        cloud_endpoint_.reset();
+        return;
+      }
+
+      if (!setup_bridge_callbacks()) {
+        PLOGE << "VDA5050Proxy failed to setup bridge callbacks.";
+        cloud_endpoint_.reset();
+        return;
+      }
+
+      PLOGI << "VDA5050Proxy cloud connected to " << config_.cloud_mqtt_host
+            << ":" << config_.cloud_mqtt_port;
+
+      if (on_cloud_connected_)
+        on_cloud_connected_();
+    } else {
+      PLOGW << "VDA5050Proxy cloud connection failed (rc=" << rc
+            << "), will retry.";
+    }
+  });
+
   const int cloud_loop_rc = cloud_client_.loop_start();
   if (cloud_loop_rc != MOSQ_ERR_SUCCESS) {
     PLOGE << "VDA5050Proxy failed to start cloud MQTT loop, rc="
           << cloud_loop_rc;
-    stop();
-    return false;
+    // Local is already running; do not abort. Cloud loop is non-critical.
+  }
+
+  const int cloud_connect_rc = cloud_client_.connect_async(
+      config_.cloud_mqtt_host.c_str(), static_cast<int>(config_.cloud_mqtt_port),
+      60);
+  if (cloud_connect_rc != MOSQ_ERR_SUCCESS) {
+    PLOGW << "VDA5050Proxy cloud connect_async failed, rc=" << cloud_connect_rc
+          << ". Proxy will start without cloud MQTT.";
   }
 
   running_.store(true, std::memory_order_relaxed);

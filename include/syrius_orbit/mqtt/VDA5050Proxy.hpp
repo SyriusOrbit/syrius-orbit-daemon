@@ -6,6 +6,7 @@
 #include "VDA5050TopicContext.hpp"
 
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -20,6 +21,11 @@ public:
 
   VDA5050EndPoint *localEndpoint() { return local_endpoint_.get(); }
   VDA5050EndPoint *cloudEndpoint() { return cloud_endpoint_.get(); }
+
+  using CloudConnectedCallback = std::function<void()>;
+  void setOnCloudConnected(CloudConnectedCallback callback) {
+    on_cloud_connected_ = std::move(callback);
+  }
 
 private:
   static bool parse_topic_prefix(const std::string &prefix,
@@ -41,6 +47,7 @@ private:
   MqttSubscriber cloud_client_;
   std::unique_ptr<VDA5050EndPoint> local_endpoint_;
   std::unique_ptr<VDA5050EndPoint> cloud_endpoint_;
+  CloudConnectedCallback on_cloud_connected_;
 };
 
 } // namespace syrius_orbit

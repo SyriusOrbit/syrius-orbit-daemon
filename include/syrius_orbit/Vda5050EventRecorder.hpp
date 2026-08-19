@@ -24,8 +24,13 @@ class Vda5050EventRecorder {
                        Vda5050EventsRepository &repo);
 
   /// Registers record callbacks on both endpoints. Safe to call after
-  /// the endpoints have been initialized.
+  /// the endpoints have been initialized. Cloud callbacks are skipped if
+  /// the cloud endpoint is not yet available; call attachCloud() later.
   void attach();
+
+  /// Registers record callbacks on the cloud endpoint. Safe to call
+  /// multiple times (idempotent). No-op if cloud_ep_ is nullptr.
+  void attachCloud();
 
  private:
   static void insertEvent(Vda5050EventsRepository &repo,
@@ -41,6 +46,7 @@ class Vda5050EventRecorder {
   VDA5050EndPoint *local_ep_;
   VDA5050EndPoint *cloud_ep_;
   Vda5050EventsRepository &repo_;
+  bool attached_cloud_{false};
 };
 
 }  // namespace syrius_orbit

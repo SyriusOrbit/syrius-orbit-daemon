@@ -58,6 +58,10 @@ int Daemon::run() {
         fleet_gateway_.proxy().cloudEndpoint(), events_repo_);
     event_recorder.attach();
 
+    fleet_gateway_.proxy().setOnCloudConnected([&event_recorder]() {
+        event_recorder.attachCloud();
+    });
+
     int exit_code = 0;
     PLOGI << "Daemon started.";
 
