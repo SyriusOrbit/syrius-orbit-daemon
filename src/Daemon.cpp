@@ -29,7 +29,10 @@ Daemon::Daemon(RuntimeConfig config)
       robots_repo_(db_),
       orders_repo_(db_),
       instant_actions_repo_(db_),
-      maps_repo_(db_) {}
+      maps_repo_(db_),
+      projection_engine_(db_, robots_repo_, orders_repo_,
+                         instant_actions_repo_,
+                         config_.projection_interval_ms) {}
 
 int Daemon::run() {
     try {
@@ -70,6 +73,8 @@ int Daemon::run() {
                !stop_requested_.load(std::memory_order_relaxed)) {
         PLOGE << "SpatialService unavailable. Continuing without Spatial API.";
     }
+
+    projection_engine_.start();
 
     if (!http_server.set_mount_point("/console", "web")) {
         PLOGE << "Static file mount failed for '/console' -> 'web'.";
@@ -120,6 +125,7 @@ int Daemon::run() {
         stop_http_server_fn_ = nullptr;
     }
 
+    projection_engine_.stop();
     spatial_service_.stop();
     fleet_gateway_.stop();
 

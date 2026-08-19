@@ -71,6 +71,44 @@ void OrdersRepository::upsert(const Order& order) {
   stmt.exec();
 }
 
+void OrdersRepository::upsertFromOrder(
+    const std::string& order_id,
+    const std::string& robot_id,
+    int64_t order_update_id,
+    const std::string& order_description,
+    const std::string& nodes,
+    const std::string& edges,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO orders "
+      "(order_id, order_update_id, order_description, "
+      " assigned_robot_id, site_id, nodes, edges, "
+      " last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(order_id) DO UPDATE SET "
+      "  order_update_id    = excluded.order_update_id, "
+      "  order_description  = excluded.order_description, "
+      "  assigned_robot_id  = excluded.assigned_robot_id, "
+      "  nodes              = excluded.nodes, "
+      "  edges              = excluded.edges, "
+      "  last_updated_at    = excluded.last_updated_at");
+
+  stmt.bind(1, order_id);
+  stmt.bind(2, order_update_id);
+  if (!order_description.empty())
+    stmt.bind(3, order_description);
+  else
+    stmt.bind(3);
+  stmt.bind(4, robot_id);
+  stmt.bind(5, "");  // site_id: management-side field, empty placeholder
+  stmt.bind(6, nodes);
+  stmt.bind(7, edges);
+  stmt.bind(8, last_updated_at);
+  stmt.bind(9, last_updated_at);
+  stmt.exec();
+}
+
 Order OrdersRepository::fromRow(const SQLite::Statement& stmt) {
   Order order;
   order.order_id = stmt.getColumn(0).getString();

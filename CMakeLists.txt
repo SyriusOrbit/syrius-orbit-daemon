@@ -36,6 +36,13 @@ add_executable(
     src/db/OrdersRepository.cpp
     src/db/InstantActionsRepository.cpp
     src/db/MapsRepository.cpp
+    src/projection/ProjectionEngine.cpp
+    src/projection/ConnectionProjector.cpp
+    src/projection/StateProjector.cpp
+    src/projection/FactsheetProjector.cpp
+    src/projection/OrderProjector.cpp
+    src/projection/InstantActionsProjector.cpp
+    src/projection/ResponsesProjector.cpp
     ${MIGRATION_GENERATED_SOURCES}
 )
 target_link_libraries(

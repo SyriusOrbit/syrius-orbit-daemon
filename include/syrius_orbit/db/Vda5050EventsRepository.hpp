@@ -35,7 +35,12 @@ class Vda5050EventsRepository {
   /// Throws on failure.
   int64_t insert(const Vda5050Event& event);
 
+  /// Returns the latest event per item_id for the given topic.
+  /// Used by the projection layer.
+  std::vector<Vda5050Event> findLatestByTopic(const std::string& topic);
+
  private:
+  static Vda5050Event fromRow(const SQLite::Statement& stmt);
   SQLite::Database& db_;
 };
 

@@ -13,6 +13,7 @@
 #include "syrius_orbit/db/OrdersRepository.hpp"
 #include "syrius_orbit/db/InstantActionsRepository.hpp"
 #include "syrius_orbit/db/MapsRepository.hpp"
+#include "syrius_orbit/projection/ProjectionEngine.hpp"
 
 namespace syrius_orbit {
 
@@ -32,6 +33,7 @@ private:
     MapsRepository maps_repo_;
     SpatialService spatial_service_;
     FleetGateway fleet_gateway_;
+    ProjectionEngine projection_engine_;
     std::atomic_bool stop_requested_{false};
     std::mutex http_server_control_mutex_;
     std::function<void()> stop_http_server_fn_;

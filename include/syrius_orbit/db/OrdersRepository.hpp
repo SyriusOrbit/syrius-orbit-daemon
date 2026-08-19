@@ -40,6 +40,15 @@ class OrdersRepository {
   /// Inserts or updates an order record (for projection layer).
   void upsert(const Order& order);
 
+  /// Updates order fields from a VDA5050 order event (projection: order topic).
+  void upsertFromOrder(const std::string& order_id,
+                       const std::string& robot_id,
+                       int64_t order_update_id,
+                       const std::string& order_description,
+                       const std::string& nodes,
+                       const std::string& edges,
+                       const std::string& last_updated_at);
+
  private:
   static Order fromRow(const SQLite::Statement& stmt);
   SQLite::Database& db_;

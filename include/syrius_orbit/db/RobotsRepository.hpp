@@ -45,6 +45,31 @@ class RobotsRepository {
   /// Inserts or updates a robot record (for projection layer).
   void upsert(const Robot& robot);
 
+  /// Updates connection-related columns only (projection: connection topic).
+  void upsertConnection(const std::string& robot_id,
+                        const std::string& manufacturer,
+                        const std::string& serial_number,
+                        const std::string& connection_state,
+                        const std::string& last_updated_at);
+
+  /// Updates state-related columns only (projection: state topic).
+  void upsertState(const std::string& robot_id,
+                   const std::string& manufacturer,
+                   const std::string& serial_number,
+                   const std::string& operating_mode,
+                   bool driving,
+                   bool paused,
+                   double battery_level,
+                   bool charging,
+                   const std::string& last_updated_at);
+
+  /// Updates factsheet column only (projection: factsheet topic).
+  void upsertFactsheet(const std::string& robot_id,
+                       const std::string& manufacturer,
+                       const std::string& serial_number,
+                       const std::string& factsheet,
+                       const std::string& last_updated_at);
+
  private:
   static Robot fromRow(const SQLite::Statement& stmt);
   SQLite::Database& db_;

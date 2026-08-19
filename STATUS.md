@@ -29,6 +29,7 @@ Each item has a stable hierarchical ID assigned at creation and never renumbered
 ## Current Status
 
 - [M3] Data model and storage
+- [M3F5] Projection layer
 
 ## Recently Completed
 

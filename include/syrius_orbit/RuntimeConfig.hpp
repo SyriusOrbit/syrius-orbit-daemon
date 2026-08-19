@@ -22,6 +22,7 @@ struct RuntimeConfig {
   std::string cloud_mqtt_password{};
   std::string mqtt_topic_prefix{"vda5050/v3"};
   std::string db_path{"syrius_orbit.db"};
+  int projection_interval_ms{1000};
 
   [[nodiscard]] RuntimeConfig Override(const RuntimeConfig &other) const {
     const RuntimeConfig default_config;
@@ -56,6 +57,8 @@ struct RuntimeConfig {
       result.mqtt_topic_prefix = other.mqtt_topic_prefix;
     if (other.db_path != default_config.db_path)
       result.db_path = other.db_path;
+    if (other.projection_interval_ms != default_config.projection_interval_ms)
+      result.projection_interval_ms = other.projection_interval_ms;
     return result;
   }
 };
@@ -65,6 +68,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RuntimeConfig, config_file_path, http_host,
                                    mqtt_client_id, mqtt_username, mqtt_password,
                                    cloud_mqtt_host, cloud_mqtt_port, cloud_mqtt_client_id,
                                    cloud_mqtt_username, cloud_mqtt_password, mqtt_topic_prefix,
-                                   db_path);
+                                   db_path, projection_interval_ms);
 
 } // namespace syrius_orbit

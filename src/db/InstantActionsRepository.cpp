@@ -85,6 +85,69 @@ void InstantActionsRepository::upsert(const InstantAction& action) {
   stmt.exec();
 }
 
+void InstantActionsRepository::upsertFromAction(
+    const std::string& action_id,
+    const std::string& action_type,
+    const std::string& action_descriptor,
+    const std::string& blocking_type,
+    const std::string& action_parameters,
+    const std::string& robot_id,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO instant_actions "
+      "(action_id, action_type, action_descriptor, blocking_type, "
+      " action_parameters, robot_id, last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(action_id) DO UPDATE SET "
+      "  action_type       = excluded.action_type, "
+      "  action_descriptor  = excluded.action_descriptor, "
+      "  blocking_type      = excluded.blocking_type, "
+      "  action_parameters  = excluded.action_parameters, "
+      "  robot_id           = excluded.robot_id, "
+      "  last_updated_at    = excluded.last_updated_at");
+
+  stmt.bind(1, action_id);
+  stmt.bind(2, action_type);
+  if (!action_descriptor.empty())
+    stmt.bind(3, action_descriptor);
+  else
+    stmt.bind(3);
+  stmt.bind(4, blocking_type);
+  if (!action_parameters.empty())
+    stmt.bind(5, action_parameters);
+  else
+    stmt.bind(5);
+  stmt.bind(6, robot_id);
+  stmt.bind(7, last_updated_at);
+  stmt.bind(8, last_updated_at);
+  stmt.exec();
+}
+
+void InstantActionsRepository::upsertFromResponse(
+    const std::string& action_id,
+    const std::string& robot_id,
+    const std::string& action_status,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO instant_actions "
+      "(action_id, action_type, action_status, robot_id, "
+      " last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(action_id) DO UPDATE SET "
+      "  action_status    = excluded.action_status, "
+      "  last_updated_at  = excluded.last_updated_at");
+
+  stmt.bind(1, action_id);
+  stmt.bind(2, "zoneRequest");
+  stmt.bind(3, action_status);
+  stmt.bind(4, robot_id);
+  stmt.bind(5, last_updated_at);
+  stmt.bind(6, last_updated_at);
+  stmt.exec();
+}
+
 InstantAction InstantActionsRepository::fromRow(const SQLite::Statement& stmt) {
   InstantAction action;
   action.action_id = stmt.getColumn(0).getString();

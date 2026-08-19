@@ -95,6 +95,93 @@ void RobotsRepository::upsert(const Robot& robot) {
   stmt.exec();
 }
 
+void RobotsRepository::upsertConnection(
+    const std::string& robot_id,
+    const std::string& manufacturer,
+    const std::string& serial_number,
+    const std::string& connection_state,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO robots "
+      "(robot_id, manufacturer, serial_number, connection_state, "
+      " last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(robot_id) DO UPDATE SET "
+      "  connection_state  = excluded.connection_state, "
+      "  last_updated_at   = excluded.last_updated_at");
+
+  stmt.bind(1, robot_id);
+  stmt.bind(2, manufacturer);
+  stmt.bind(3, serial_number);
+  stmt.bind(4, connection_state);
+  stmt.bind(5, last_updated_at);
+  stmt.bind(6, last_updated_at);
+  stmt.exec();
+}
+
+void RobotsRepository::upsertState(
+    const std::string& robot_id,
+    const std::string& manufacturer,
+    const std::string& serial_number,
+    const std::string& operating_mode,
+    bool driving,
+    bool paused,
+    double battery_level,
+    bool charging,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO robots "
+      "(robot_id, manufacturer, serial_number, operating_mode, driving, "
+      " paused, battery_level, charging, last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(robot_id) DO UPDATE SET "
+      "  operating_mode  = excluded.operating_mode, "
+      "  driving         = excluded.driving, "
+      "  paused          = excluded.paused, "
+      "  battery_level   = excluded.battery_level, "
+      "  charging        = excluded.charging, "
+      "  last_updated_at = excluded.last_updated_at");
+
+  stmt.bind(1, robot_id);
+  stmt.bind(2, manufacturer);
+  stmt.bind(3, serial_number);
+  stmt.bind(4, operating_mode);
+  stmt.bind(5, driving ? 1 : 0);
+  stmt.bind(6, paused ? 1 : 0);
+  stmt.bind(7, battery_level);
+  stmt.bind(8, charging ? 1 : 0);
+  stmt.bind(9, last_updated_at);
+  stmt.bind(10, last_updated_at);
+  stmt.exec();
+}
+
+void RobotsRepository::upsertFactsheet(
+    const std::string& robot_id,
+    const std::string& manufacturer,
+    const std::string& serial_number,
+    const std::string& factsheet,
+    const std::string& last_updated_at) {
+  SQLite::Statement stmt(
+      db_,
+      "INSERT INTO robots "
+      "(robot_id, manufacturer, serial_number, factsheet, "
+      " last_updated_at, created_at) "
+      "VALUES (?, ?, ?, ?, ?, ?) "
+      "ON CONFLICT(robot_id) DO UPDATE SET "
+      "  factsheet        = excluded.factsheet, "
+      "  last_updated_at  = excluded.last_updated_at");
+
+  stmt.bind(1, robot_id);
+  stmt.bind(2, manufacturer);
+  stmt.bind(3, serial_number);
+  stmt.bind(4, factsheet);
+  stmt.bind(5, last_updated_at);
+  stmt.bind(6, last_updated_at);
+  stmt.exec();
+}
+
 Robot RobotsRepository::fromRow(const SQLite::Statement& stmt) {
   Robot robot;
   robot.robot_id = stmt.getColumn(0).getString();
