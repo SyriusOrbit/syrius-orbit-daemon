@@ -28,11 +28,10 @@ Each item has a stable hierarchical ID assigned at creation and never renumbered
 
 ## Current Status
 
-- [M3] Data model and storage
-- [M3F5] Projection layer
-
 ## Recently Completed
 
+- [M3] Data model and storage [2026-08-19]
+- [M3F5] Projection layer [2026-08-19]
 - [M3F4] Base data access layer [2026-08-18]
 - [M3F3] Schema migration system [2026-08-17]
 - [M3F2] Core table schema design [2026-08-16]
